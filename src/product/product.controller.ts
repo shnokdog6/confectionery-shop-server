@@ -1,3 +1,6 @@
+import { createProductDto } from "@/product/dto/createProductDto";
+import { Product } from "@/product/product.model";
+import { ProductService } from "@/product/product.service";
 import {
     Body,
     Controller,
@@ -6,18 +9,21 @@ import {
     Param,
     ParseFilePipe,
     Post,
+    Query,
     UploadedFile,
     UseInterceptors
 } from '@nestjs/common';
-import {createProductDto} from "@/product/dto/createProductDto";
-import {ProductService} from "@/product/product.service";
-import {FileInterceptor} from "@nestjs/platform-express";
-import {Product} from "@/product/product.model";
+import { FileInterceptor } from "@nestjs/platform-express";
 
 @Controller('product')
 export class ProductController {
 
     constructor(private productService: ProductService) {
+    }
+
+    @Get()
+    public async getAll(@Query() query: { categories?: number[] }) {
+        return await this.productService.getAll(query);
     }
 
     @Get(":id")
@@ -32,12 +38,12 @@ export class ProductController {
         @UploadedFile(
             new ParseFilePipe({
                 validators: [
-                    new FileTypeValidator({fileType: "image/*"})
+                    new FileTypeValidator({ fileType: "image/*" })
                 ]
             })
         ) preview: Express.Multer.File
     ): Promise<Product> {
-        return this.productService.create({...dto, preview});
+        return this.productService.create({ ...dto, preview });
     }
 
 }

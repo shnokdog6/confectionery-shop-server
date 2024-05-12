@@ -1,4 +1,4 @@
-import {SequelizeModule} from "@nestjs/sequelize";
+import { SequelizeModule } from "@nestjs/sequelize";
 
 export const SequelizeConfiguredModule = SequelizeModule.forRoot({
     dialect: "postgres",

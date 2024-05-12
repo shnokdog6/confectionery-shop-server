@@ -1,27 +1,28 @@
-import {BelongsTo, BelongsToMany, Column, ForeignKey, HasMany, Model, Table} from "sequelize-typescript";
-import {Category} from "@/category/category.model";
+import { BelongsTo, BelongsToMany, Column, ForeignKey, HasMany, Model, Table } from "sequelize-typescript";
+import { Category } from "@/category/category.model";
 
 export interface ProductAttributes {
     name: string;
     preview: string;
     cost: number;
+    categories: number[];
 }
 
 export interface ProductCreateAttributes extends ProductAttributes {
 }
 
-@Table({timestamps: false})
+@Table({ timestamps: false })
 export class Product extends Model<ProductAttributes, ProductCreateAttributes> {
-    @Column({allowNull: false})
+    @Column({ allowNull: false })
     name: string;
 
-    @Column({allowNull: false})
+    @Column({ allowNull: false })
     preview: string;
 
-    @Column({allowNull: false})
+    @Column({ allowNull: false })
     cost: number;
 
-    @BelongsToMany(() => Category, {through: {model: () => ProductCategories}})
+    @BelongsToMany(() => Category, { through: { model: () => ProductCategories } })
     categories: Category[];
 }
 
@@ -33,7 +34,7 @@ export interface ProductCategoriesAttributes {
 export interface ProductCategoriesCreateAttributes extends ProductCategoriesAttributes {
 }
 
-@Table({timestamps: false})
+@Table({ timestamps: false })
 export class ProductCategories extends Model<ProductCategoriesAttributes, ProductCategoriesCreateAttributes> {
     @ForeignKey(() => Product)
     @Column
