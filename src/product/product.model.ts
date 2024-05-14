@@ -1,14 +1,16 @@
 import { BelongsTo, BelongsToMany, Column, ForeignKey, HasMany, Model, Table } from "sequelize-typescript";
 import { Category } from "@/category/category.model";
+import { Optional } from "sequelize";
 
 export interface ProductAttributes {
+    id: number;
     name: string;
     preview: string;
     cost: number;
     categories: number[];
 }
 
-export interface ProductCreateAttributes extends ProductAttributes {
+export interface ProductCreateAttributes extends Optional<ProductAttributes, "id"> {
 }
 
 @Table({ timestamps: false })

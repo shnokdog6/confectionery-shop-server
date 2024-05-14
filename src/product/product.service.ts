@@ -46,17 +46,22 @@ export class ProductService {
                 },
             },
             group: ["Product.id"],
-            having: sequelize.where(sequelize.fn('COUNT', '*'), '=', categories.length)
-        });
+            having: sequelize.where(sequelize.fn('COUNT', '*'), '=', categories.length),
+            raw: true
+        })
+            .then(array => array.map(item => item.id));
 
-        return Promise.all(identifiers.map(item => this.product.findByPk(item.id, {
+        return this.product.findAll({
             include: {
                 model: Category,
                 through: {
                     attributes: []
                 }
+            },
+            where: {
+                id: identifiers
             }
-        })));
+        });
     }
 
     public async getById(id: number) {
