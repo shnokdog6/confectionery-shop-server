@@ -1,6 +1,8 @@
 import { BelongsTo, BelongsToMany, Column, ForeignKey, HasMany, Model, Table } from "sequelize-typescript";
 import { Category } from "@/category/category.model";
 import { Optional } from "sequelize";
+import { Basket, ProductsInBasket } from "@/basket/basket.model";
+import { User } from "@/user/user.model";
 
 export interface ProductAttributes {
     id: number;
@@ -24,8 +26,11 @@ export class Product extends Model<ProductAttributes, ProductCreateAttributes> {
     @Column({ allowNull: false })
     cost: number;
 
-    @BelongsToMany(() => Category, { through: { model: () => ProductCategories } })
+    @BelongsToMany(() => Category, () => ProductCategories)
     categories: Category[];
+
+    @BelongsToMany(() => Basket, () => ProductsInBasket)
+    baskets: Basket[];
 }
 
 export interface ProductCategoriesAttributes {

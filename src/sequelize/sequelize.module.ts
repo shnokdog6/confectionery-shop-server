@@ -8,5 +8,5 @@ export const SequelizeConfiguredModule = SequelizeModule.forRoot({
     password: "root",
     database: "ConfectioneryShop",
     autoLoadModels: true,
-    //sync: {force: true}
+    //sync: { force: true },
 });

@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { authRequestDto } from "./dto/authRequestDto";
 import { UserService } from "@/user/user.service";
 import bcrypt from "bcrypt";
@@ -17,77 +17,68 @@ export class AuthService {
     ) {
     }
 
-    public async login(dto: authRequestDto) {
+    public async login(dto: authRequestDto): Promise<authResponseDto> {
         const user = await this.userService.getByPhoneNumber(dto.phoneNumber);
         if (!user) {
-            throw new Error("Пользоветель не существует");
+            throw new BadRequestException("Пользоветель не существует");
         }
         const isPasswordsEquals = await bcrypt.compare(dto.password, user.password);
         if (!isPasswordsEquals) {
-            throw new Error("Неверный пароль");
+            throw new BadRequestException("Неверный пароль");
         }
-        const tokens = await this.getTokens(user.phoneNumber, user.password);
+        const tokens = await this.getTokens(user.id, user.password);
         await this.updateRefreshToken(user, tokens.refreshToken);
 
-        return {
-            accessToken: tokens.accessToken,
-            refreshToken: tokens.refreshToken,
-        } as authResponseDto;
+        return tokens;
     }
 
-    public async register(dto: authRequestDto) {
+    public async register(dto: authRequestDto): Promise<authResponseDto> {
         let candidate = await this.userService.getByPhoneNumber(dto.phoneNumber);
         if (candidate) {
-            throw new Error("Номер телефона занят");
+            throw new BadRequestException("Номер телефона занят");
         }
         candidate = await this.userService.create(dto);
-        const tokens = await this.getTokens(candidate.phoneNumber, candidate.password);
+        const tokens = await this.getTokens(candidate.id, candidate.password);
         await this.updateRefreshToken(candidate, tokens.refreshToken);
 
-        return {
-            accessToken: tokens.accessToken,
-            refreshToken: tokens.refreshToken,
-        } as authResponseDto;
+        return tokens;
     }
 
-    public async updateTokens(phoneNumber: string, refreshToken: string) {
-        const user = await this.userService.getByPhoneNumber(phoneNumber);
+    public async updateTokens(userID: number, refreshToken: string): Promise<authResponseDto> {
+        const user = await this.userService.getById(userID);
 
         if (!user || !user.refreshToken) {
-            throw new Error("Access Denied");
+            throw new BadRequestException();
         }
 
         const refreshTokensMatches = await bcrypt.compare(refreshToken, user.refreshToken);
 
         if (!refreshTokensMatches) {
-            throw new Error("Access Denied");
+            throw new BadRequestException();
         }
 
-        const tokens = await this.getTokens(user.phoneNumber, user.password);
+        const tokens = await this.getTokens(user.id, user.password);
         await this.updateRefreshToken(user, tokens.refreshToken);
 
-        return {
-            accessToken: tokens.accessToken,
-            refreshToken: tokens.refreshToken,
-        } as authResponseDto;
+        return tokens;
     }
 
-    private async updateRefreshToken(user: User, refreshToken: string) {
+    private async updateRefreshToken(user: User, refreshToken: string): Promise<void> {
         user.refreshToken = await bcrypt.hash(refreshToken, 3);
         await user.save();
     }
 
-    private async getTokens(phoneNumber: string, password: string) {
+    private async getTokens(userID: number, password: string): Promise<authResponseDto> {
         return {
             accessToken: await this.jwtService.signAsync({
-                phoneNumber,
+                userID,
                 password,
             }),
             refreshToken: jwt.sign({
-                phoneNumber,
+                userID,
                 password,
             }, "refresh", { expiresIn: "15d" }),
-        };
+        } as authResponseDto;
     }
 
 }

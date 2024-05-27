@@ -14,6 +14,7 @@ import { SequelizeConfiguredModule } from '@/sequelize';
         FileModule
     ],
     controllers: [ProductController],
-    providers: [ProductService]
+    providers: [ProductService],
+    exports: [ProductService]
 })
 export class ProductModule { }

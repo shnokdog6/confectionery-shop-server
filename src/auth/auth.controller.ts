@@ -18,13 +18,9 @@ export class AuthController {
         @Body() dto: authRequestDto,
         @Res({ passthrough: true }) res: Response,
     ) {
-        try {
-            const data = await this.authService.login(dto);
-            this.setRefreshToken(res, data.refreshToken);
-            return data;
-        } catch (e) {
-            throw new BadRequestException(e);
-        }
+        const data = await this.authService.login(dto);
+        this.setRefreshToken(res, data.refreshToken);
+        return data;
     }
 
     @Post("register")

@@ -16,12 +16,20 @@ export class UserService {
         return this.userModel.findAll();
     }
 
+    public async getById(id: number) {
+        return this.userModel.findByPk(id);
+    }
+
     public async getByPhoneNumber(phoneNumber: string) {
-        return this.userModel.findByPk(phoneNumber);
+        return this.userModel.findOne({
+            where: {
+                phoneNumber
+            }
+        });
     }
 
     public async create(dto: createUserDto) {
-        const user = await this.userModel.findByPk(dto.phoneNumber);
+        const user = await this.getByPhoneNumber(dto.phoneNumber);
         if (user) {
             throw new Error("Пользоветель с таким номер существует");
         }

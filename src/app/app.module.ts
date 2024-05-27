@@ -6,6 +6,7 @@ import {CategoryModule} from "@/category/category.module";
 import {ProductModule} from "@/product/product.module";
 import { UserModule } from '@/user/user.module';
 import { AuthModule } from "@/auth/auth.module";
+import { BasketModule } from "@/basket/basket.module";
 
 
 @Module({
@@ -15,6 +16,7 @@ import { AuthModule } from "@/auth/auth.module";
       ProductModule,
       UserModule,
       AuthModule,
+      BasketModule,
   ],
   controllers: [AppController],
   providers: [AppService],

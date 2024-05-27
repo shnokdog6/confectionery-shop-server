@@ -74,6 +74,15 @@ export class ProductService {
         });
     }
 
+    public async include(identifiers: number[]) {
+        const products = await this.product.findAll({
+            where: {
+                id: identifiers
+            }
+        });
+        return products.length === identifiers.length;
+    }
+
     public async create(dto: createProductDto) {
         const filename = await this.fileService.create(dto.preview) || "empty";
         const product = await this.product.create({

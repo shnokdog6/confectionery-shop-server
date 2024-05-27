@@ -1,5 +1,7 @@
-import { Column, Model, Table } from "sequelize-typescript";
+import { BelongsToMany, Column, HasMany, HasOne, Model, Table } from "sequelize-typescript";
 import { Optional } from "sequelize";
+import { Product } from "@/product/product.model";
+import { Basket } from "@/basket/basket.model";
 
 export interface UserAttributes {
     id: number;
@@ -13,7 +15,7 @@ export interface UserCreateAttributes extends Optional<UserAttributes, "id"> {
 
 @Table({ timestamps: false })
 export class User extends Model<UserAttributes, UserCreateAttributes> {
-    @Column({ primaryKey: true, allowNull: false })
+    @Column({ unique: true, allowNull: false })
     phoneNumber: string;
 
     @Column({ allowNull: false })
@@ -21,4 +23,7 @@ export class User extends Model<UserAttributes, UserCreateAttributes> {
 
     @Column
     refreshToken: string;
+
+    @HasOne(() => Basket)
+    basket: Basket;
 }

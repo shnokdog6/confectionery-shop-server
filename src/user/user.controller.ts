@@ -6,7 +6,9 @@ import { JwtAccessGuard } from "@/auth/strategy/access.strategy";
 @Controller("user")
 export class UserController {
 
-    constructor(private userService: UserService) {
+    constructor(
+        private userService: UserService
+    ) {
     }
 
     @UseGuards(JwtAccessGuard)
