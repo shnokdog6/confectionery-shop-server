@@ -5,6 +5,7 @@ import { InjectModel } from "@nestjs/sequelize";
 import { Basket, ProductsInBasket } from "@/basket/basket.model";
 import { ProductService } from "@/product/product.service";
 import { Product } from "@/product/product.model";
+import { Sequelize } from "sequelize-typescript";
 
 @Injectable()
 export class BasketService {
@@ -58,19 +59,26 @@ export class BasketService {
     public async getAll(userID: number) {
         const basket = await this.basketModel.findOne({
             where: {
-                userID
-            }
+                userID,
+            },
         });
         return this.productInBasketModel.findAll({
             include: {
-                model: Product
+                model: Product,
+                attributes: [],
             },
             where: {
-                basketID: basket.id
+                basketID: basket.id,
             },
             attributes: {
-                exclude: ["basketID", "productID"]
-            }
+                exclude: ["basketID", "productID"],
+                include: [
+                    [Sequelize.col("\"product\".\"id\""), "id"],
+                    [Sequelize.col("\"product\".\"name\""), "name"],
+                    [Sequelize.col("\"product\".\"preview\""), "preview"],
+                    [Sequelize.col("\"product\".\"cost\""), "cost"],
+                ],
+            },
         });
     }
 }
