@@ -5,6 +5,7 @@ import { Product, ProductCategories } from '@/product/product.model';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import sequelize from 'sequelize';
+import { response } from "express";
 
 @Injectable()
 export class ProductService {
@@ -99,5 +100,15 @@ export class ProductService {
         }
 
         return this.getById(product.id);
+    }
+
+    public async getSumOfProducts(identifiers: number[]) {
+        return await this.product.findAll({
+            where: {
+                id: identifiers
+            },
+            attributes: [[sequelize.fn('sum', sequelize.col('cost')), 'cost']],
+            raw: true
+        }).then(result => result[0].cost);
     }
 }
