@@ -6,11 +6,7 @@ import bcrypt from "bcrypt";
 
 @Injectable()
 export class UserService {
-
-    constructor(
-        @InjectModel(User) private userModel: typeof User,
-    ) {
-    }
+    constructor(@InjectModel(User) private userModel: typeof User) {}
 
     public async getAll() {
         return this.userModel.findAll();
@@ -23,8 +19,8 @@ export class UserService {
     public async getByPhoneNumber(phoneNumber: string) {
         return this.userModel.findOne({
             where: {
-                phoneNumber
-            }
+                phoneNumber,
+            },
         });
     }
 
@@ -36,8 +32,7 @@ export class UserService {
         const passwordHash = await bcrypt.hash(dto.password, 3);
         return this.userModel.create({
             phoneNumber: dto.phoneNumber,
-            password: passwordHash
+            password: passwordHash,
         });
     }
-
 }

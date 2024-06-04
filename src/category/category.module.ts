@@ -1,14 +1,12 @@
-import { Module } from '@nestjs/common';
-import {SequelizeModule} from "@nestjs/sequelize";
-import {Category} from "@/category/category.model";
-import { CategoryController } from './category.controller';
-import { CategoryService } from './category.service';
+import { Module } from "@nestjs/common";
+import { SequelizeModule } from "@nestjs/sequelize";
+import { Category } from "@/category/category.model";
+import { CategoryController } from "./category.controller";
+import { CategoryService } from "./category.service";
 
 @Module({
-    imports: [
-        SequelizeModule.forFeature([Category])
-    ],
+    imports: [SequelizeModule.forFeature([Category])],
     controllers: [CategoryController],
-    providers: [CategoryService]
+    providers: [CategoryService],
 })
 export class CategoryModule {}

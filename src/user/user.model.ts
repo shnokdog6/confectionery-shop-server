@@ -1,7 +1,13 @@
-import { BelongsToMany, Column, HasMany, HasOne, Model, Table } from "sequelize-typescript";
+import {
+    BelongsToMany,
+    Column,
+    HasOne,
+    Model,
+    Table,
+} from "sequelize-typescript";
 import { Optional } from "sequelize";
-import { Product } from "@/product/product.model";
 import { Basket } from "@/basket/basket.model";
+import { Role, UserRoles } from "@/role/role.model";
 
 export interface UserAttributes {
     id: number;
@@ -10,8 +16,7 @@ export interface UserAttributes {
     refreshToken: string | null;
 }
 
-export interface UserCreateAttributes extends Optional<UserAttributes, "id"> {
-}
+export interface UserCreateAttributes extends Optional<UserAttributes, "id"> {}
 
 @Table({ timestamps: false })
 export class User extends Model<UserAttributes, UserCreateAttributes> {
@@ -26,4 +31,7 @@ export class User extends Model<UserAttributes, UserCreateAttributes> {
 
     @HasOne(() => Basket)
     basket: Basket;
+
+    @BelongsToMany(() => Role, () => UserRoles)
+    roles: Role[];
 }

@@ -5,11 +5,13 @@ export interface CategoryAttributes {
     name: string;
 }
 
-export interface CategoryCreateAttributes extends CategoryAttributes {
-}
+export interface CategoryCreateAttributes extends CategoryAttributes {}
 
 @Table({ timestamps: false })
-export class Category extends Model<CategoryAttributes, CategoryCreateAttributes> {
+export class Category extends Model<
+    CategoryAttributes,
+    CategoryCreateAttributes
+> {
     @Column({ allowNull: false })
     name: string;
 

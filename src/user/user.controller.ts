@@ -1,15 +1,18 @@
-import { BadRequestException, Body, Controller, Get, Post, UseGuards } from "@nestjs/common";
+import {
+    BadRequestException,
+    Body,
+    Controller,
+    Get,
+    Post,
+    UseGuards,
+} from "@nestjs/common";
 import { UserService } from "@/user/user.service";
 import { createUserDto } from "@/user/dto/createUserDto";
 import { JwtAccessGuard } from "@/auth/strategy/access.strategy";
 
 @Controller("user")
 export class UserController {
-
-    constructor(
-        private userService: UserService
-    ) {
-    }
+    constructor(private userService: UserService) {}
 
     @UseGuards(JwtAccessGuard)
     @Get()
@@ -30,5 +33,4 @@ export class UserController {
             throw new BadRequestException(e);
         }
     }
-
 }
