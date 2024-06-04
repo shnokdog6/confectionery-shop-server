@@ -23,7 +23,7 @@ export class OrderService {
     public async create(dto: createOrderDto) {
         const sum = await this.productService.getSumOfProducts(
             dto.products.map((item) => item.id),
-        );g
+        );
         const order = await this.orderModel.create({
             userID: dto.userID,
             sum,
