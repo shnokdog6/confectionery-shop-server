@@ -8,7 +8,8 @@ import jwt from "jsonwebtoken";
 import { authResponseDto } from "@/auth/dto/authResponseDto";
 import { JwtPayloadDto } from "@/jwt/dto/JwtPayloadDto";
 import { RoleService } from "@/role/role.service";
-import { Role } from "@/role/role.enum";
+import { RoleType } from "@/role/role.enum";
+import { Role, UserRoles } from "@/role/role.model";
 
 @Injectable()
 export class AuthService {
@@ -30,9 +31,14 @@ export class AuthService {
         if (!isPasswordsEquals) {
             throw new BadRequestException("Неверный пароль");
         }
+
+        const userRoles = await this.roleService
+            .get({ userID: user.id })
+            .then((result) => result.map((item: Role) => item.id as RoleType));
+
         const tokens = await this.getTokens({
             id: user.id,
-            roles: user.roles.map((role) => role.id),
+            roles: userRoles,
         });
         await this.updateRefreshToken(user, tokens.refreshToken);
 
@@ -49,12 +55,12 @@ export class AuthService {
         candidate = await this.userService.create(dto);
         await this.roleService.addRolesToUser({
             userID: candidate.id,
-            roles: [Role.USER],
+            roles: [RoleType.USER],
         });
 
         const tokens = await this.getTokens({
             id: candidate.id,
-            roles: [Role.USER],
+            roles: [RoleType.USER],
         });
         await this.updateRefreshToken(candidate, tokens.refreshToken);
 

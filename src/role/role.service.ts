@@ -20,9 +20,9 @@ export class RoleService {
         private readonly userService: UserService,
     ) {}
 
-    public async get(dto: GetRolesDto): Promise<UserRoles[] | Role[]> {
+    public async get(dto: GetRolesDto): Promise<Role[]> {
         if (dto.userID) {
-            return this.userRolesModel.findAll({
+            return (await this.userRolesModel.findAll({
                 include: {
                     model: Role,
                     attributes: [],
@@ -38,7 +38,7 @@ export class RoleService {
                     exclude: ["roleID", "userID"],
                 },
                 raw: true,
-            });
+            })) as unknown as Role[];
         }
         return this.roleModel.findAll();
     }
