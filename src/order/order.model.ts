@@ -7,7 +7,7 @@ import {
     Table,
 } from "sequelize-typescript";
 import { Optional } from "sequelize";
-import { User } from "@/user/user.model";
+import { UserModel } from "@/user/user.model";
 import { Product } from "@/product/product.model";
 
 export interface OrderAttributes {
@@ -21,12 +21,12 @@ export interface OrderCreateAttributes
 
 @Table
 export class Order extends Model<OrderAttributes, OrderCreateAttributes> {
-    @ForeignKey(() => User)
+    @ForeignKey(() => UserModel)
     @Column
     userID: number;
 
-    @BelongsTo(() => User)
-    user: User;
+    @BelongsTo(() => UserModel)
+    user: UserModel;
 
     @Column({ allowNull: false })
     sum: number;

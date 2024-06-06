@@ -1,36 +1,26 @@
-import {
-    BadRequestException,
-    Body,
-    Controller,
-    Get,
-    Post,
-    UseGuards,
-} from "@nestjs/common";
+import { Body, Controller, Get, Post, Query, UseGuards } from "@nestjs/common";
 import { UserService } from "@/user/user.service";
-import { createUserDto } from "@/user/dto/createUserDto";
+import { CreateUserDto } from "@/user/dto/CreateUserDto";
 import { JwtAccessGuard } from "@/auth/strategy/access.strategy";
 import { Roles, RolesGuard } from "@/role/role.guard";
 import { RoleType } from "@/role/role.enum";
+import { GetUserDto } from "@/user/dto/GetUserDto";
 
 @Controller("user")
 export class UserController {
     constructor(private userService: UserService) {}
 
     @Roles([RoleType.ADMIN])
-    @UseGuards(RolesGuard)
-    @UseGuards(JwtAccessGuard)
+    @UseGuards(JwtAccessGuard, RolesGuard)
     @Get()
-    public async getAll() {
-        return this.userService.getAll();
+    public async get(@Query() dto: GetUserDto) {
+        return this.userService.get(dto);
     }
 
-    @Get(":phoneNumber")
-    public async getByPhoneNumber(phoneNumber: string) {
-        return this.userService.getByPhoneNumber(phoneNumber);
-    }
-
+    @Roles([RoleType.ADMIN])
+    @UseGuards(JwtAccessGuard, RolesGuard)
     @Post()
-    public async create(@Body() dto: createUserDto) {
+    public async create(@Body() dto: CreateUserDto) {
         return this.userService.create(dto);
     }
 }

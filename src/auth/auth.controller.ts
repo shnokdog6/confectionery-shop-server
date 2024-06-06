@@ -1,5 +1,4 @@
 import {
-    BadRequestException,
     Body,
     Controller,
     Get,
@@ -8,7 +7,7 @@ import {
     Res,
     UseGuards,
 } from "@nestjs/common";
-import { authRequestDto } from "@/auth/dto/authRequestDto";
+import { AuthRequestDto } from "@/auth/dto/AuthRequestDto";
 import { AuthService } from "@/auth/auth.service";
 import { Request, Response } from "express";
 import { daysToMs } from "@/lib";
@@ -20,7 +19,7 @@ export class AuthController {
 
     @Post("login")
     public async login(
-        @Body() dto: authRequestDto,
+        @Body() dto: AuthRequestDto,
         @Res({ passthrough: true }) res: Response,
     ) {
         const data = await this.authService.login(dto);
@@ -30,7 +29,7 @@ export class AuthController {
 
     @Post("register")
     async register(
-        @Body() dto: authRequestDto,
+        @Body() dto: AuthRequestDto,
         @Res({ passthrough: true }) res: Response,
     ) {
         const data = await this.authService.register(dto);

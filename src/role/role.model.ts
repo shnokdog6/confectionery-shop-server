@@ -7,7 +7,7 @@ import {
     Table,
 } from "sequelize-typescript";
 import { Optional } from "sequelize";
-import { User } from "@/user/user.model";
+import { UserModel } from "@/user/user.model";
 
 export interface RoleAttributes {
     id: number;
@@ -21,8 +21,8 @@ export class Role extends Model<RoleAttributes, RoleCreateAttributes> {
     @Column({ allowNull: false, unique: true })
     name: string;
 
-    @BelongsToMany(() => User, () => UserRoles)
-    users: User[];
+    @BelongsToMany(() => UserModel, () => UserRoles)
+    users: UserModel[];
 }
 
 export interface UserRolesAttributes {
@@ -44,10 +44,10 @@ export class UserRoles extends Model<
     @BelongsTo(() => Role)
     role: Role;
 
-    @ForeignKey(() => User)
+    @ForeignKey(() => UserModel)
     @Column({ allowNull: false })
     userID: number;
 
-    @BelongsTo(() => User)
-    user: User;
+    @BelongsTo(() => UserModel)
+    user: UserModel;
 }

@@ -3,9 +3,11 @@ import { InjectModel } from "@nestjs/sequelize";
 import { Order, ProductsInOrder } from "@/order/order.model";
 import { createOrderDto } from "@/order/dto/createOrderDto";
 import { ProductService } from "@/product/product.service";
-import { User } from "@/user/user.model";
 import { Product } from "@/product/product.model";
 import { Sequelize } from "sequelize-typescript";
+import { UserModel } from "@/user/user.model";
+import { JwtPayloadDto } from "@/jwt/dto/JwtPayloadDto";
+import { RoleType } from "@/role/role.enum";
 
 @Injectable()
 export class OrderService {
@@ -16,8 +18,12 @@ export class OrderService {
         private productService: ProductService,
     ) {}
 
-    public async getAll() {
-        return this.orderModel.findAll();
+    public async get(dto: JwtPayloadDto) {
+        return this.orderModel.findAll({
+            where: {
+                ...(!dto.roles.includes(RoleType.ADMIN) && { userID: dto.id }),
+            },
+        });
     }
 
     public async create(dto: createOrderDto) {
@@ -38,7 +44,7 @@ export class OrderService {
         return this.orderModel.findByPk(order.id, {
             include: [
                 {
-                    model: User,
+                    model: UserModel,
                     attributes: ["id", "phoneNumber"],
                 },
                 {

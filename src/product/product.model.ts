@@ -1,16 +1,13 @@
 import {
-    BelongsTo,
     BelongsToMany,
     Column,
     ForeignKey,
-    HasMany,
     Model,
     Table,
 } from "sequelize-typescript";
 import { Category } from "@/category/category.model";
 import { Optional } from "sequelize";
 import { Basket, ProductsInBasket } from "@/basket/basket.model";
-import { User } from "@/user/user.model";
 
 export interface ProductAttributes {
     id: number;

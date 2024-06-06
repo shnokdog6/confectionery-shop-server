@@ -18,7 +18,7 @@ export class BasketService {
     ) {}
 
     public async add(dto: addToBasketDto) {
-        const user = await this.userService.getById(dto.userID);
+        const user = await this.userService.get({ id: dto.userID });
         if (!user) {
             throw new BadRequestException("Пользоветель не найден");
         }
@@ -61,7 +61,7 @@ export class BasketService {
         }
     }
 
-    public async getAll(userID: number) {
+    public async get(userID: number) {
         const basket = await this.basketModel.findOne({
             where: {
                 userID,

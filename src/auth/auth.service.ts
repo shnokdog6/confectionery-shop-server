@@ -1,15 +1,15 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
-import { authRequestDto } from "./dto/authRequestDto";
 import { UserService } from "@/user/user.service";
 import bcrypt from "bcrypt";
 import { JwtService } from "@nestjs/jwt";
-import { User } from "@/user/user.model";
+import { UserModel } from "@/user/user.model";
 import jwt from "jsonwebtoken";
-import { authResponseDto } from "@/auth/dto/authResponseDto";
+import { AuthResponseDto } from "@/auth/dto/AuthResponseDto";
 import { JwtPayloadDto } from "@/jwt/dto/JwtPayloadDto";
 import { RoleService } from "@/role/role.service";
 import { RoleType } from "@/role/role.enum";
-import { Role, UserRoles } from "@/role/role.model";
+import { Role } from "@/role/role.model";
+import { AuthRequestDto } from "@/auth/dto/AuthRequestDto";
 
 @Injectable()
 export class AuthService {
@@ -19,8 +19,13 @@ export class AuthService {
         private readonly jwtService: JwtService,
     ) {}
 
-    public async login(dto: authRequestDto): Promise<authResponseDto> {
-        const user = await this.userService.getByPhoneNumber(dto.phoneNumber);
+    public async login(dto: AuthRequestDto): Promise<AuthResponseDto> {
+        const user = await this.userService
+            .get({
+                phoneNumber: dto.phoneNumber,
+            })
+            .then((result) => result[0]);
+
         if (!user) {
             throw new BadRequestException("Пользоветель не существует");
         }
@@ -45,14 +50,20 @@ export class AuthService {
         return tokens;
     }
 
-    public async register(dto: authRequestDto): Promise<authResponseDto> {
-        let candidate = await this.userService.getByPhoneNumber(
-            dto.phoneNumber,
-        );
+    public async register(dto: AuthRequestDto): Promise<AuthResponseDto> {
+        let candidate = await this.userService
+            .get({
+                phoneNumber: dto.phoneNumber,
+            })
+            .then((result) => result[0]);
+
         if (candidate) {
             throw new BadRequestException("Номер телефона занят");
         }
-        candidate = await this.userService.create(dto);
+        candidate = await this.userService.create({
+            phoneNumber: dto.phoneNumber,
+            password: dto.password,
+        });
         await this.roleService.addRolesToUser({
             userID: candidate.id,
             roles: [RoleType.USER],
@@ -70,8 +81,12 @@ export class AuthService {
     public async updateTokens(
         userID: number,
         refreshToken: string,
-    ): Promise<authResponseDto> {
-        const user = await this.userService.getById(userID);
+    ): Promise<AuthResponseDto> {
+        const user = await this.userService
+            .get({
+                id: userID,
+            })
+            .then((result) => result[0]);
 
         if (!user || !user.refreshToken) {
             throw new BadRequestException();
@@ -96,17 +111,17 @@ export class AuthService {
     }
 
     private async updateRefreshToken(
-        user: User,
+        user: UserModel,
         refreshToken: string,
     ): Promise<void> {
         user.refreshToken = await bcrypt.hash(refreshToken, 3);
         await user.save();
     }
 
-    private async getTokens(dto: JwtPayloadDto): Promise<authResponseDto> {
+    private async getTokens(dto: JwtPayloadDto): Promise<AuthResponseDto> {
         return {
             accessToken: await this.jwtService.signAsync(dto),
             refreshToken: jwt.sign(dto, "refresh", { expiresIn: "15d" }),
-        } as authResponseDto;
+        } as AuthResponseDto;
     }
 }

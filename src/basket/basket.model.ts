@@ -7,7 +7,7 @@ import {
     Table,
 } from "sequelize-typescript";
 import { Product } from "@/product/product.model";
-import { User } from "@/user/user.model";
+import { UserModel } from "@/user/user.model";
 import { Optional } from "sequelize";
 
 export interface BasketAttributes {
@@ -20,12 +20,12 @@ export interface BasketCreateAttributes
 
 @Table({ timestamps: false })
 export class Basket extends Model<BasketAttributes, BasketCreateAttributes> {
-    @ForeignKey(() => User)
+    @ForeignKey(() => UserModel)
     @Column
     userID: number;
 
-    @BelongsTo(() => User)
-    user: User;
+    @BelongsTo(() => UserModel)
+    user: UserModel;
 
     @BelongsToMany(() => Product, () => ProductsInBasket)
     products: Product[];

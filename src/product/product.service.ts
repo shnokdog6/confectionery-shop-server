@@ -5,7 +5,7 @@ import { Product, ProductCategories } from "@/product/product.model";
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
 import sequelize from "sequelize";
-import { response } from "express";
+import { GetProductDto } from "@/product/dto/GetProductDto";
 
 @Injectable()
 export class ProductService {
@@ -16,11 +16,10 @@ export class ProductService {
         private fileService: FileService,
     ) {}
 
-    public async getAll(options: { categories?: number[] }) {
-        if (options.categories) {
-            return this.getAllByCategories(options.categories);
+    public async get(dto: GetProductDto) {
+        if (dto.categories) {
+            return this.getByCategories(dto);
         }
-
         return this.product.findAll({
             include: {
                 model: Category,
@@ -28,10 +27,13 @@ export class ProductService {
                     attributes: [],
                 },
             },
+            where: {
+                ...dto,
+            },
         });
     }
 
-    private async getAllByCategories(categories: number[]) {
+    private async getByCategories(dto: GetProductDto) {
         const identifiers = await this.product
             .findAll({
                 attributes: ["id"],
@@ -42,19 +44,20 @@ export class ProductService {
                         attributes: [],
                     },
                     where: {
-                        id: categories,
+                        id: dto.categories,
                     },
                 },
                 group: ["Product.id"],
                 having: sequelize.where(
                     sequelize.fn("COUNT", "*"),
                     "=",
-                    categories.length,
+                    dto.categories.length,
                 ),
                 raw: true,
             })
             .then((array) => array.map((item) => item.id));
 
+        delete dto.categories;
         return this.product.findAll({
             include: {
                 model: Category,
@@ -63,6 +66,7 @@ export class ProductService {
                 },
             },
             where: {
+                ...dto,
                 id: identifiers,
             },
         });

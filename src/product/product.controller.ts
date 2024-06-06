@@ -11,24 +11,26 @@ import {
     Post,
     Query,
     UploadedFile,
+    UseGuards,
     UseInterceptors,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
+import { Roles, RolesGuard } from "@/role/role.guard";
+import { RoleType } from "@/role/role.enum";
+import { JwtAccessGuard } from "@/auth/strategy/access.strategy";
+import { GetProductDto } from "@/product/dto/GetProductDto";
 
 @Controller("product")
 export class ProductController {
     constructor(private productService: ProductService) {}
 
     @Get()
-    public async getAll(@Query() query: { categories?: number[] }) {
-        return await this.productService.getAll(query);
+    public async get(@Query() query: GetProductDto) {
+        return await this.productService.get(query);
     }
 
-    @Get(":id")
-    public async getById(@Param("id") id: number): Promise<Product> {
-        return await this.productService.getById(id);
-    }
-
+    @Roles([RoleType.ADMIN])
+    @UseGuards(JwtAccessGuard, RolesGuard)
     @UseInterceptors(FileInterceptor("preview"))
     @Post()
     public async create(

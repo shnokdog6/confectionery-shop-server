@@ -16,10 +16,11 @@ export interface UserAttributes {
     refreshToken: string | null;
 }
 
-export interface UserCreateAttributes extends Optional<UserAttributes, "id"> {}
+export interface UserCreateAttributes
+    extends Optional<UserAttributes, "id" | "refreshToken"> {}
 
 @Table({ timestamps: false })
-export class User extends Model<UserAttributes, UserCreateAttributes> {
+export class UserModel extends Model<UserAttributes, UserCreateAttributes> {
     @Column({ unique: true, allowNull: false })
     phoneNumber: string;
 

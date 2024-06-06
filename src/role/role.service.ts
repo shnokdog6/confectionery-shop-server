@@ -1,11 +1,8 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
 import { Role, UserRoles } from "@/role/role.model";
-import { CreateRoleDto } from "@/role/dto/CreateRoleDto";
 import { AddRolesDto } from "@/role/dto/AddRolesDto";
 import { UserService } from "@/user/user.service";
-import { DeleteRoleDto } from "@/role/dto/DeleteRoleDto";
-import { EditRoleDto } from "@/role/dto/EditRoleDto";
 import { RemoveRolesDto } from "@/role/dto/RemoveRolesDto";
 import { GetRolesDto } from "@/role/dto/GetRolesDto";
 import { Sequelize } from "sequelize-typescript";
@@ -43,36 +40,8 @@ export class RoleService {
         return this.roleModel.findAll();
     }
 
-    public async create(dto: CreateRoleDto): Promise<void> {
-        const role = await this.roleModel.findOne({
-            where: {
-                name: dto.name,
-            },
-        });
-        if (role) {
-            throw new BadRequestException("Роль уже существует");
-        }
-        await this.roleModel.create(dto);
-    }
-
-    public async delete(dto: DeleteRoleDto): Promise<void> {
-        await this.roleModel.destroy({
-            where: {
-                id: dto.id,
-            },
-        });
-    }
-
-    public async update({ id, ...dto }: EditRoleDto): Promise<void> {
-        const role = await this.roleModel.findByPk(id);
-        if (!role) {
-            throw new BadRequestException("Роль не существует");
-        }
-        await role.update(dto);
-    }
-
     public async addRolesToUser(dto: AddRolesDto): Promise<void> {
-        const user = await this.userService.getById(dto.userID);
+        const user = await this.userService.get({ id: dto.userID });
         if (!user) {
             throw new BadRequestException("Пользователя не существует");
         }
@@ -95,7 +64,7 @@ export class RoleService {
     }
 
     public async removeRolesFromUser(dto: RemoveRolesDto): Promise<void> {
-        const user = await this.userService.getById(dto.userID);
+        const user = await this.userService.get({ id: dto.userID });
         if (!user) {
             throw new BadRequestException("Пользователя не существует");
         }
