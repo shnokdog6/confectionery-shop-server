@@ -1,14 +1,10 @@
-import {Body, Controller, Get, Param, Post} from '@nestjs/common';
-import {CategoryService} from "@/category/category.service";
-import {createCategoryDto} from "@/category/dto/createCategoryDto";
+import { Body, Controller, Get, Param, Post } from "@nestjs/common";
+import { CategoryService } from "@/category/category.service";
+import { createCategoryDto } from "@/category/dto/createCategoryDto";
 
-@Controller('category')
+@Controller("category")
 export class CategoryController {
-
-    constructor(private categoryService: CategoryService) {
-    }
-
-
+    constructor(private categoryService: CategoryService) {}
 
     @Get(":id")
     public async getByID(@Param("id") id: number) {
@@ -24,5 +20,4 @@ export class CategoryController {
     public async create(@Body() dto: createCategoryDto) {
         return await this.categoryService.create(dto);
     }
-
 }

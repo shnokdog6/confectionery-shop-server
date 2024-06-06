@@ -9,14 +9,13 @@ import { Sequelize } from "sequelize-typescript";
 
 @Injectable()
 export class BasketService {
-
     constructor(
         @InjectModel(Basket) private basketModel: typeof Basket,
-        @InjectModel(ProductsInBasket) private productInBasketModel: typeof ProductsInBasket,
+        @InjectModel(ProductsInBasket)
+        private productInBasketModel: typeof ProductsInBasket,
         private userService: UserService,
         private productService: ProductService,
-    ) {
-    }
+    ) {}
 
     public async add(dto: addToBasketDto) {
         const user = await this.userService.getById(dto.userID);
@@ -24,16 +23,22 @@ export class BasketService {
             throw new BadRequestException("Пользоветель не найден");
         }
 
-        const isProductsExist = await this.productService.include(dto.products.map(product => product.id));
+        const isProductsExist = await this.productService.include(
+            dto.products.map((product) => product.id),
+        );
         if (!isProductsExist) {
-            throw new BadRequestException("Указан продукт, которого не существует");
+            throw new BadRequestException(
+                "Указан продукт, которого не существует",
+            );
         }
 
-        const basket = await this.basketModel.findOrCreate({
-            where: {
-                userID: dto.userID,
-            },
-        }).then(result => result[0]);
+        const basket = await this.basketModel
+            .findOrCreate({
+                where: {
+                    userID: dto.userID,
+                },
+            })
+            .then((result) => result[0]);
 
         for (const product of dto.products) {
             const instance = await this.productInBasketModel.findOne({
@@ -73,10 +78,10 @@ export class BasketService {
             attributes: {
                 exclude: ["basketID", "productID"],
                 include: [
-                    [Sequelize.col("\"product\".\"id\""), "id"],
-                    [Sequelize.col("\"product\".\"name\""), "name"],
-                    [Sequelize.col("\"product\".\"preview\""), "preview"],
-                    [Sequelize.col("\"product\".\"cost\""), "cost"],
+                    [Sequelize.col('"product"."id"'), "id"],
+                    [Sequelize.col('"product"."name"'), "name"],
+                    [Sequelize.col('"product"."preview"'), "preview"],
+                    [Sequelize.col('"product"."cost"'), "cost"],
                 ],
             },
         });

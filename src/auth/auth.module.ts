@@ -6,15 +6,11 @@ import { JwtConfiguredModule } from "@/jwt/jwt.module";
 import { PassportModule } from "@nestjs/passport";
 import { AccessTokenStrategy } from "@/auth/strategy/access.strategy";
 import { RefreshTokenStrategy } from "@/auth/strategy/refresh.strategy";
+import { RoleModule } from "@/role/role.module";
 
 @Module({
-    imports: [
-        UserModule,
-        PassportModule,
-        JwtConfiguredModule,
-    ],
+    imports: [UserModule, RoleModule, PassportModule, JwtConfiguredModule],
     providers: [AuthService, AccessTokenStrategy, RefreshTokenStrategy],
     controllers: [AuthController],
 })
-export class AuthModule {
-}
+export class AuthModule {}

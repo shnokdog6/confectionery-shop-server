@@ -1,4 +1,12 @@
-import { BelongsTo, BelongsToMany, Column, ForeignKey, HasMany, Model, Table } from "sequelize-typescript";
+import {
+    BelongsTo,
+    BelongsToMany,
+    Column,
+    ForeignKey,
+    HasMany,
+    Model,
+    Table,
+} from "sequelize-typescript";
 import { Category } from "@/category/category.model";
 import { Optional } from "sequelize";
 import { Basket, ProductsInBasket } from "@/basket/basket.model";
@@ -12,8 +20,8 @@ export interface ProductAttributes {
     categories: number[];
 }
 
-export interface ProductCreateAttributes extends Optional<ProductAttributes, "id"> {
-}
+export interface ProductCreateAttributes
+    extends Optional<ProductAttributes, "id"> {}
 
 @Table({ timestamps: false })
 export class Product extends Model<ProductAttributes, ProductCreateAttributes> {
@@ -38,11 +46,14 @@ export interface ProductCategoriesAttributes {
     categoryID: number;
 }
 
-export interface ProductCategoriesCreateAttributes extends ProductCategoriesAttributes {
-}
+export interface ProductCategoriesCreateAttributes
+    extends ProductCategoriesAttributes {}
 
 @Table({ timestamps: false })
-export class ProductCategories extends Model<ProductCategoriesAttributes, ProductCategoriesCreateAttributes> {
+export class ProductCategories extends Model<
+    ProductCategoriesAttributes,
+    ProductCategoriesCreateAttributes
+> {
     @ForeignKey(() => Product)
     @Column
     productID: number;

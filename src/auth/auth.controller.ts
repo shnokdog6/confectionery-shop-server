@@ -1,4 +1,13 @@
-import { BadRequestException, Body, Controller, Get, Post, Req, Res, UseGuards } from "@nestjs/common";
+import {
+    BadRequestException,
+    Body,
+    Controller,
+    Get,
+    Post,
+    Req,
+    Res,
+    UseGuards,
+} from "@nestjs/common";
 import { authRequestDto } from "@/auth/dto/authRequestDto";
 import { AuthService } from "@/auth/auth.service";
 import { Request, Response } from "express";
@@ -7,11 +16,7 @@ import { JwtRefreshGuard } from "@/auth/strategy/refresh.strategy";
 
 @Controller("auth")
 export class AuthController {
-
-    constructor(
-        private authService: AuthService,
-    ) {
-    }
+    constructor(private authService: AuthService) {}
 
     @Post("login")
     public async login(
@@ -39,11 +44,13 @@ export class AuthController {
         @Req() req: Request,
         @Res({ passthrough: true }) res: Response,
     ) {
-        const data = await this.authService.updateTokens(req.user["phoneNumber"], req.user["refreshToken"]);
+        const data = await this.authService.updateTokens(
+            req.user["phoneNumber"],
+            req.user["refreshToken"],
+        );
         this.setRefreshToken(res, data.refreshToken);
         return data;
     }
-
 
     private setRefreshToken(res: Response, refreshToken: string) {
         res.cookie("refreshToken", refreshToken, {
@@ -52,5 +59,4 @@ export class AuthController {
             sameSite: "none",
         });
     }
-
 }

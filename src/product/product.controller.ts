@@ -11,15 +11,13 @@ import {
     Post,
     Query,
     UploadedFile,
-    UseInterceptors
-} from '@nestjs/common';
+    UseInterceptors,
+} from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 
-@Controller('product')
+@Controller("product")
 export class ProductController {
-
-    constructor(private productService: ProductService) {
-    }
+    constructor(private productService: ProductService) {}
 
     @Get()
     public async getAll(@Query() query: { categories?: number[] }) {
@@ -37,13 +35,11 @@ export class ProductController {
         @Body() dto: createProductDto,
         @UploadedFile(
             new ParseFilePipe({
-                validators: [
-                    new FileTypeValidator({ fileType: "image/*" })
-                ]
-            })
-        ) preview: Express.Multer.File
+                validators: [new FileTypeValidator({ fileType: "image/*" })],
+            }),
+        )
+        preview: Express.Multer.File,
     ): Promise<Product> {
         return this.productService.create({ ...dto, preview });
     }
-
 }

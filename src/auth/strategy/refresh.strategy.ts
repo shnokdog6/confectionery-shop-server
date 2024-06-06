@@ -4,16 +4,19 @@ import { Injectable } from "@nestjs/common";
 import { Request } from "express";
 
 @Injectable()
-export class RefreshTokenStrategy extends PassportStrategy(Strategy, "jwt-refresh") {
-
+export class RefreshTokenStrategy extends PassportStrategy(
+    Strategy,
+    "jwt-refresh",
+) {
     constructor() {
         super({
-            jwtFromRequest: ExtractJwt.fromExtractors([RefreshTokenStrategy.jwtFromCookie]),
+            jwtFromRequest: ExtractJwt.fromExtractors([
+                RefreshTokenStrategy.jwtFromCookie,
+            ]),
             ignoreExpiration: false,
             secretOrKey: "refresh",
             passReqToCallback: true,
         });
-
     }
 
     private static jwtFromCookie(req: Request): string | null {
@@ -24,7 +27,6 @@ export class RefreshTokenStrategy extends PassportStrategy(Strategy, "jwt-refres
         const refreshToken = RefreshTokenStrategy.jwtFromCookie(req);
         return { ...payload, refreshToken };
     }
-
 }
 
 export const JwtRefreshGuard = AuthGuard("jwt-refresh");

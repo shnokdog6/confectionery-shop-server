@@ -1,4 +1,11 @@
-import { BelongsTo, BelongsToMany, Column, ForeignKey, Model, Table } from "sequelize-typescript";
+import {
+    BelongsTo,
+    BelongsToMany,
+    Column,
+    ForeignKey,
+    Model,
+    Table,
+} from "sequelize-typescript";
 import { Product } from "@/product/product.model";
 import { User } from "@/user/user.model";
 import { Optional } from "sequelize";
@@ -8,8 +15,8 @@ export interface BasketAttributes {
     userID: number;
 }
 
-export interface BasketCreateAttributes extends Optional<BasketAttributes, "id"> {
-}
+export interface BasketCreateAttributes
+    extends Optional<BasketAttributes, "id"> {}
 
 @Table({ timestamps: false })
 export class Basket extends Model<BasketAttributes, BasketCreateAttributes> {
@@ -30,11 +37,14 @@ export interface ProductsInBasketAttributes {
     count: number;
 }
 
-export interface ProductsInBasketCreateAttributes extends ProductsInBasketAttributes {
-}
+export interface ProductsInBasketCreateAttributes
+    extends ProductsInBasketAttributes {}
 
 @Table({ timestamps: false })
-export class ProductsInBasket extends Model<ProductsInBasketAttributes, ProductsInBasketCreateAttributes> {
+export class ProductsInBasket extends Model<
+    ProductsInBasketAttributes,
+    ProductsInBasketCreateAttributes
+> {
     @ForeignKey(() => Basket)
     @Column
     basketID: number;

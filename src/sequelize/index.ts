@@ -1,1 +1,1 @@
-export {SequelizeConfiguredModule} from "./sequelize.module"
+export { SequelizeConfiguredModule } from "./sequelize.module";

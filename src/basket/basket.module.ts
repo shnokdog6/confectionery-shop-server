@@ -10,10 +10,9 @@ import { ProductModule } from "@/product/product.module";
     imports: [
         SequelizeModule.forFeature([Basket, ProductsInBasket]),
         UserModule,
-        ProductModule
+        ProductModule,
     ],
     providers: [BasketService],
     controllers: [BasketController],
 })
-export class BasketModule {
-}
+export class BasketModule {}

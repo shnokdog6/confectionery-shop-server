@@ -3,13 +3,9 @@ import { JwtAccessGuard } from "@/auth/strategy/access.strategy";
 import { BasketService } from "@/basket/basket.service";
 import { addToBasketDto } from "@/basket/dto/addToBasketDto";
 
-@Controller('basket')
+@Controller("basket")
 export class BasketController {
-
-    constructor(
-        private basketService: BasketService
-    ) {
-    }
+    constructor(private basketService: BasketService) {}
 
     @UseGuards(JwtAccessGuard)
     @Get(":userID")
@@ -23,5 +19,4 @@ export class BasketController {
         //console.log(dto);
         return this.basketService.add(dto);
     }
-
 }
