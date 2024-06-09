@@ -2,6 +2,8 @@ import {
     Body,
     Controller,
     Get,
+    HttpCode,
+    HttpStatus,
     Post,
     Req,
     Res,
@@ -10,13 +12,15 @@ import {
 import { AuthRequestDto } from "@/auth/dto/AuthRequestDto";
 import { AuthService } from "@/auth/auth.service";
 import { Request, Response } from "express";
-import { daysToMs } from "@/lib";
 import { JwtRefreshGuard } from "@/auth/strategy/refresh.strategy";
+
+const fifteenDaysInMilliseconds = 15 * 24 * 60 * 60 * 1000;
 
 @Controller("auth")
 export class AuthController {
     constructor(private authService: AuthService) {}
 
+    @HttpCode(HttpStatus.OK)
     @Post("login")
     public async login(
         @Body() dto: AuthRequestDto,
@@ -27,6 +31,7 @@ export class AuthController {
         return data;
     }
 
+    @HttpCode(HttpStatus.OK)
     @Post("register")
     async register(
         @Body() dto: AuthRequestDto,
@@ -37,14 +42,15 @@ export class AuthController {
         return data;
     }
 
+    @HttpCode(HttpStatus.OK)
     @UseGuards(JwtRefreshGuard)
     @Get("update")
-    public async updateTokens(
+    public async refreshTokens(
         @Req() req: Request,
         @Res({ passthrough: true }) res: Response,
     ) {
-        const data = await this.authService.updateTokens(
-            req.user["phoneNumber"],
+        const data = await this.authService.refreshTokens(
+            req.user["id"],
             req.user["refreshToken"],
         );
         this.setRefreshToken(res, data.refreshToken);
@@ -53,7 +59,7 @@ export class AuthController {
 
     private setRefreshToken(res: Response, refreshToken: string) {
         res.cookie("refreshToken", refreshToken, {
-            maxAge: daysToMs(15),
+            maxAge: fifteenDaysInMilliseconds,
             httpOnly: true,
             sameSite: "none",
         });

@@ -1,4 +1,4 @@
 export class createOrderDto {
-    public readonly userID: number;
+    public readonly userID: string;
     public readonly products: Array<{ id: number; count: number }>;
 }

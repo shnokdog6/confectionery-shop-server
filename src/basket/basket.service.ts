@@ -2,10 +2,11 @@ import { BadRequestException, Injectable } from "@nestjs/common";
 import { UserService } from "@/user/user.service";
 import { addToBasketDto } from "@/basket/dto/addToBasketDto";
 import { InjectModel } from "@nestjs/sequelize";
-import { Basket, ProductsInBasket } from "@/basket/basket.model";
+import { Basket } from "@/basket/basket.model";
 import { ProductService } from "@/product/product.service";
 import { Product } from "@/product/product.model";
 import { Sequelize } from "sequelize-typescript";
+import { ProductsInBasket } from "@/products-in-basket/products-in-basket.model";
 
 @Injectable()
 export class BasketService {
@@ -61,7 +62,7 @@ export class BasketService {
         }
     }
 
-    public async get(userID: number) {
+    public async get(userID: string) {
         const basket = await this.basketModel.findOne({
             where: {
                 userID,

@@ -1,5 +1,6 @@
 import { BelongsToMany, Column, Model, Table } from "sequelize-typescript";
-import { Product, ProductCategories } from "@/product/product.model";
+import { Product } from "@/product/product.model";
+import { ProductCategories } from "@/products-categories/product-categories.model";
 
 export interface CategoryAttributes {
     name: string;

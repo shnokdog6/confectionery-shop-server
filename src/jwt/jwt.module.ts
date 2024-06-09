@@ -1,6 +1,10 @@
-import { JwtModule } from "@nestjs/jwt";
+import { JwtService } from "./jwt.service";
+import { Module } from "@nestjs/common";
+import { RedisModule } from "@/redis/redis.module";
 
-export const JwtConfiguredModule = JwtModule.register({
-    secret: "access",
-    signOptions: { expiresIn: "15m" },
-});
+@Module({
+    imports: [RedisModule],
+    providers: [JwtService],
+    exports: [JwtService],
+})
+export class JwtModule {}

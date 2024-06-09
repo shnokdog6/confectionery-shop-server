@@ -10,7 +10,6 @@ import { GetUserDto } from "@/user/dto/GetUserDto";
 export class UserController {
     constructor(private userService: UserService) {}
 
-    @Roles([RoleType.ADMIN])
     @UseGuards(JwtAccessGuard, RolesGuard)
     @Get()
     public async get(@Query() dto: GetUserDto) {
@@ -23,4 +22,10 @@ export class UserController {
     public async create(@Body() dto: CreateUserDto) {
         return this.userService.create(dto);
     }
+
+    // @UseGuards(JwtAccessGuard, RolesGuard)
+    // @Get(":id/roles")
+    // public async getRoles(@User() user: JwtPayloadDto) {
+    //     return this.userService.getRoles(user.id);
+    // }
 }

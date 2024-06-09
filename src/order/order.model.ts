@@ -6,13 +6,14 @@ import {
     Model,
     Table,
 } from "sequelize-typescript";
-import { Optional } from "sequelize";
+import { Optional, UUID } from "sequelize";
 import { UserModel } from "@/user/user.model";
 import { Product } from "@/product/product.model";
+import { ProductsInOrder } from "@/products-in-order/products-in-order.model";
 
 export interface OrderAttributes {
     id: number;
-    userID: number;
+    userID: string;
     sum: number;
 }
 
@@ -22,8 +23,8 @@ export interface OrderCreateAttributes
 @Table
 export class Order extends Model<OrderAttributes, OrderCreateAttributes> {
     @ForeignKey(() => UserModel)
-    @Column
-    userID: number;
+    @Column({ type: UUID })
+    userID: string;
 
     @BelongsTo(() => UserModel)
     user: UserModel;
@@ -33,36 +34,4 @@ export class Order extends Model<OrderAttributes, OrderCreateAttributes> {
 
     @BelongsToMany(() => Product, () => ProductsInOrder)
     products: Product[];
-}
-
-export interface ProductsInOrderAttributes {
-    orderID: number;
-    productID: number;
-    count: number;
-}
-
-export interface ProductsInOrderCreateAttributes
-    extends ProductsInOrderAttributes {}
-
-@Table({ timestamps: false })
-export class ProductsInOrder extends Model<
-    ProductsInOrderAttributes,
-    ProductsInOrderCreateAttributes
-> {
-    @ForeignKey(() => Order)
-    @Column({ allowNull: false })
-    orderID: number;
-
-    @BelongsTo(() => Order)
-    order: Order;
-
-    @ForeignKey(() => Product)
-    @Column({ allowNull: false })
-    productID: number;
-
-    @BelongsTo(() => Product)
-    product: Product;
-
-    @Column({ allowNull: false, defaultValue: 1 })
-    count: number;
 }

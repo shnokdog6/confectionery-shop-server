@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
-import { Order, ProductsInOrder } from "@/order/order.model";
+import { Order } from "@/order/order.model";
 import { createOrderDto } from "@/order/dto/createOrderDto";
 import { ProductService } from "@/product/product.service";
 import { Product } from "@/product/product.model";
@@ -8,6 +8,7 @@ import { Sequelize } from "sequelize-typescript";
 import { UserModel } from "@/user/user.model";
 import { JwtPayloadDto } from "@/jwt/dto/JwtPayloadDto";
 import { RoleType } from "@/role/role.enum";
+import { ProductsInOrder } from "@/products-in-order/products-in-order.model";
 
 @Injectable()
 export class OrderService {

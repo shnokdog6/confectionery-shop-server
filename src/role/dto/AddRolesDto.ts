@@ -1,4 +1,4 @@
 export class AddRolesDto {
-    public readonly userID: number;
+    public readonly userID: string;
     public readonly roles: number[];
 }
