@@ -10,20 +10,20 @@ export class RedisService {
         private readonly redisRepository: RedisRepository,
     ) {}
 
-    public async deleteTokenBlacklist(userID: string) {
-        return await this.redisRepository.delete("blackList", userID);
+    public async deleteCurrentPayloadHash(userID: string) {
+        return await this.redisRepository.delete("jwt-payload", userID);
     }
 
-    async saveTokenBlacklist(userID: string, data: string): Promise<void> {
+    async setCurrentPayloadHash(userID: string, data: string): Promise<void> {
         await this.redisRepository.setWithExpiry(
-            "blackList",
+            "jwt-payload",
             userID,
             data,
             fifteenMinutesInSeconds,
         );
     }
 
-    async getTokenBlackList(userID: string): Promise<string | null> {
-        return await this.redisRepository.get("blackList", userID);
+    async getCurrentPayloadHash(userID: string): Promise<string | null> {
+        return await this.redisRepository.get("jwt-payload", userID);
     }
 }

@@ -22,10 +22,4 @@ export class UserController {
     public async create(@Body() dto: CreateUserDto) {
         return this.userService.create(dto);
     }
-
-    // @UseGuards(JwtAccessGuard, RolesGuard)
-    // @Get(":id/roles")
-    // public async getRoles(@User() user: JwtPayloadDto) {
-    //     return this.userService.getRoles(user.id);
-    // }
 }

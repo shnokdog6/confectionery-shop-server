@@ -6,6 +6,7 @@ import { UserService } from "@/user/user.service";
 import { RemoveRolesDto } from "@/role/dto/RemoveRolesDto";
 import { JwtService } from "@/jwt/jwt.service";
 import { UserRoles } from "@/user-roles/user-roles.model";
+import { MD5 } from "object-hash";
 
 @Injectable()
 export class RoleService {
@@ -39,12 +40,16 @@ export class RoleService {
 
         for (const role of dto.roles) {
             await this.userRolesModel.create({
-                userID: dto.userID,
+                userID: user.id,
                 roleID: role,
             });
         }
 
-        await this.jwtService.makeTokenExpired(user.id);
+        const userRoles = await this.userService.getRoles(user.id);
+        await this.jwtService.setCurrentPayload({
+            id: user.id,
+            roles: userRoles.map((role) => role.id),
+        });
     }
 
     public async removeRolesFromUser(dto: RemoveRolesDto): Promise<void> {
@@ -61,11 +66,18 @@ export class RoleService {
             throw new BadRequestException("Указана не существующая роль");
         }
 
-        (await this.userRolesModel.destroy({
+        const destroyedCount = await this.userRolesModel.destroy({
             where: {
-                userID: dto.userID,
+                userID: user.id,
                 roleID: dto.roles,
             },
-        })) && (await this.jwtService.makeTokenExpired(user.id));
+        });
+        if (!destroyedCount) return;
+
+        const userRoles = await this.userService.getRoles(user.id);
+        await this.jwtService.setCurrentPayload({
+            id: user.id,
+            roles: userRoles.map((role) => role.id),
+        });
     }
 }

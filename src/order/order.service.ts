@@ -19,6 +19,10 @@ export class OrderService {
         private productService: ProductService,
     ) {}
 
+    public async getAll() {
+        return this.orderModel.findAll();
+    }
+
     public async get(dto: JwtPayloadDto) {
         return this.orderModel.findAll({
             where: {
