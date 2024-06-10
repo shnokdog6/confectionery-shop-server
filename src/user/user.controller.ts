@@ -10,7 +10,6 @@ import { GetUserDto } from "@/user/dto/GetUserDto";
 export class UserController {
     constructor(private userService: UserService) {}
 
-    @Roles([RoleType.ADMIN])
     @UseGuards(JwtAccessGuard, RolesGuard)
     @Get()
     public async get(@Query() dto: GetUserDto) {

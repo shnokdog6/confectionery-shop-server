@@ -1,3 +1,3 @@
 export class GetRolesDto {
-    public readonly userID?: number;
+    public readonly userID?: string;
 }

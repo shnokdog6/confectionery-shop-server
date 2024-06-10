@@ -11,6 +11,14 @@ import { JwtPayloadDto } from "@/jwt/dto/JwtPayloadDto";
 export class OrderController {
     constructor(private orderService: OrderService) {}
 
+    @Roles([RoleType.ADMIN])
+    @UseGuards(JwtAccessGuard)
+    @Get("/all")
+    public async getAll() {
+        return this.orderService.getAll();
+    }
+
+    @Roles([RoleType.USER])
     @UseGuards(JwtAccessGuard)
     @Get()
     public async get(@User() user: JwtPayloadDto) {

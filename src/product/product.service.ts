@@ -1,11 +1,12 @@
 import { Category } from "@/category/category.model";
 import { FileService } from "@/file/file.service";
 import { createProductDto } from "@/product/dto/createProductDto";
-import { Product, ProductCategories } from "@/product/product.model";
+import { Product } from "@/product/product.model";
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
 import sequelize from "sequelize";
 import { GetProductDto } from "@/product/dto/GetProductDto";
+import { ProductCategories } from "@/products-categories/product-categories.model";
 
 @Injectable()
 export class ProductService {

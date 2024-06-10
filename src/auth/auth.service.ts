@@ -1,15 +1,12 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { UserService } from "@/user/user.service";
 import bcrypt from "bcrypt";
-import { JwtService } from "@nestjs/jwt";
-import { UserModel } from "@/user/user.model";
-import jwt from "jsonwebtoken";
 import { AuthResponseDto } from "@/auth/dto/AuthResponseDto";
-import { JwtPayloadDto } from "@/jwt/dto/JwtPayloadDto";
 import { RoleService } from "@/role/role.service";
 import { RoleType } from "@/role/role.enum";
-import { Role } from "@/role/role.model";
 import { AuthRequestDto } from "@/auth/dto/AuthRequestDto";
+import { JwtService } from "@/jwt/jwt.service";
+import { UserModel } from "@/user/user.model";
 
 @Injectable()
 export class AuthService {
@@ -20,42 +17,28 @@ export class AuthService {
     ) {}
 
     public async login(dto: AuthRequestDto): Promise<AuthResponseDto> {
-        const user = await this.userService
-            .get({
-                phoneNumber: dto.phoneNumber,
-            })
-            .then((result) => result[0]);
+        const user = await this.userService.getByPhoneNumber(dto.phoneNumber);
 
         if (!user) {
             throw new BadRequestException("Пользоветель не существует");
         }
+
         const isPasswordsEquals = await bcrypt.compare(
             dto.password,
             user.password,
         );
+
         if (!isPasswordsEquals) {
             throw new BadRequestException("Неверный пароль");
         }
 
-        const userRoles = await this.roleService
-            .get({ userID: user.id })
-            .then((result) => result.map((item: Role) => item.id as RoleType));
-
-        const tokens = await this.getTokens({
-            id: user.id,
-            roles: userRoles,
-        });
-        await this.updateRefreshToken(user, tokens.refreshToken);
-
-        return tokens;
+        return this.generateTokens(user);
     }
 
     public async register(dto: AuthRequestDto): Promise<AuthResponseDto> {
-        let candidate = await this.userService
-            .get({
-                phoneNumber: dto.phoneNumber,
-            })
-            .then((result) => result[0]);
+        let candidate = await this.userService.getByPhoneNumber(
+            dto.phoneNumber,
+        );
 
         if (candidate) {
             throw new BadRequestException("Номер телефона занят");
@@ -64,29 +47,17 @@ export class AuthService {
             phoneNumber: dto.phoneNumber,
             password: dto.password,
         });
+
         await this.roleService.addRolesToUser({
             userID: candidate.id,
             roles: [RoleType.USER],
         });
 
-        const tokens = await this.getTokens({
-            id: candidate.id,
-            roles: [RoleType.USER],
-        });
-        await this.updateRefreshToken(candidate, tokens.refreshToken);
-
-        return tokens;
+        return this.generateTokens(candidate);
     }
 
-    public async updateTokens(
-        userID: number,
-        refreshToken: string,
-    ): Promise<AuthResponseDto> {
-        const user = await this.userService
-            .get({
-                id: userID,
-            })
-            .then((result) => result[0]);
+    public async refreshTokens(userID: string, refreshToken: string) {
+        const user = await this.userService.getByID(userID);
 
         if (!user || !user.refreshToken) {
             throw new BadRequestException();
@@ -101,27 +72,16 @@ export class AuthService {
             throw new BadRequestException();
         }
 
-        const tokens = await this.getTokens({
+        return this.generateTokens(user);
+    }
+
+    private async generateTokens(user: UserModel) {
+        const tokens = this.jwtService.generateTokens({
             id: user.id,
             roles: user.roles.map((role) => role.id),
         });
-        await this.updateRefreshToken(user, tokens.refreshToken);
-
-        return tokens;
-    }
-
-    private async updateRefreshToken(
-        user: UserModel,
-        refreshToken: string,
-    ): Promise<void> {
-        user.refreshToken = await bcrypt.hash(refreshToken, 3);
+        user.refreshToken = await bcrypt.hash(tokens.refreshToken, 3);
         await user.save();
-    }
-
-    private async getTokens(dto: JwtPayloadDto): Promise<AuthResponseDto> {
-        return {
-            accessToken: await this.jwtService.signAsync(dto),
-            refreshToken: jwt.sign(dto, "refresh", { expiresIn: "15d" }),
-        } as AuthResponseDto;
+        return tokens;
     }
 }

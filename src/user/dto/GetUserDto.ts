@@ -1,4 +1,4 @@
 export class GetUserDto {
-    public readonly id?: number;
+    public readonly id?: string;
     public readonly phoneNumber?: string;
 }

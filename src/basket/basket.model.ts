@@ -8,11 +8,12 @@ import {
 } from "sequelize-typescript";
 import { Product } from "@/product/product.model";
 import { UserModel } from "@/user/user.model";
-import { Optional } from "sequelize";
+import { Optional, UUID } from "sequelize";
+import { ProductsInBasket } from "@/products-in-basket/products-in-basket.model";
 
 export interface BasketAttributes {
     id: number;
-    userID: number;
+    userID: string;
 }
 
 export interface BasketCreateAttributes
@@ -21,44 +22,12 @@ export interface BasketCreateAttributes
 @Table({ timestamps: false })
 export class Basket extends Model<BasketAttributes, BasketCreateAttributes> {
     @ForeignKey(() => UserModel)
-    @Column
-    userID: number;
+    @Column({ type: UUID })
+    userID: string;
 
     @BelongsTo(() => UserModel)
     user: UserModel;
 
     @BelongsToMany(() => Product, () => ProductsInBasket)
     products: Product[];
-}
-
-export interface ProductsInBasketAttributes {
-    basketID: number;
-    productID: number;
-    count: number;
-}
-
-export interface ProductsInBasketCreateAttributes
-    extends ProductsInBasketAttributes {}
-
-@Table({ timestamps: false })
-export class ProductsInBasket extends Model<
-    ProductsInBasketAttributes,
-    ProductsInBasketCreateAttributes
-> {
-    @ForeignKey(() => Basket)
-    @Column
-    basketID: number;
-
-    @BelongsTo(() => Basket)
-    basket: Basket;
-
-    @ForeignKey(() => Product)
-    @Column
-    productID: number;
-
-    @BelongsTo(() => Product)
-    product: Product;
-
-    @Column({ allowNull: false, defaultValue: 1 })
-    count: number;
 }
