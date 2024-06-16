@@ -53,7 +53,7 @@ export class AuthService {
             roles: [RoleType.USER],
         });
 
-        return this.generateTokens(candidate);
+        return this.generateTokens(candidate, [RoleType.USER]);
     }
 
     public async refreshTokens(userID: string, refreshToken: string) {
@@ -75,10 +75,10 @@ export class AuthService {
         return this.generateTokens(user);
     }
 
-    private async generateTokens(user: UserModel) {
+    private async generateTokens(user: UserModel, roles?: RoleType[]) {
         const tokens = this.jwtService.generateTokens({
             id: user.id,
-            roles: user.roles.map((role) => role.id),
+            roles: roles || user.roles.map((role) => role.id),
         });
         user.refreshToken = await bcrypt.hash(tokens.refreshToken, 3);
         await user.save();

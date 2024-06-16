@@ -29,8 +29,8 @@ export class ProductController {
         return await this.productService.get(query);
     }
 
-    @Roles([RoleType.ADMIN])
-    @UseGuards(JwtAccessGuard, RolesGuard)
+    // @Roles([RoleType.ADMIN])
+    // @UseGuards(JwtAccessGuard, RolesGuard)
     @UseInterceptors(FileInterceptor("preview"))
     @Post()
     public async create(

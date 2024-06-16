@@ -19,8 +19,8 @@ export class CategoryController {
         return this.categoryService.getAll();
     }
 
-    @Roles([RoleType.ADMIN])
-    @UseGuards(JwtAccessGuard, RolesGuard)
+    // @Roles([RoleType.ADMIN])
+    // @UseGuards(JwtAccessGuard, RolesGuard)
     @Post()
     public async create(@Body() dto: createCategoryDto) {
         return this.categoryService.create(dto);

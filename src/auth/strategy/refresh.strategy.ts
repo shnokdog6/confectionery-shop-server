@@ -1,8 +1,8 @@
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { AuthGuard, PassportStrategy } from "@nestjs/passport";
-import { Injectable } from "@nestjs/common";
+import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { Request } from "express";
-import cookie from "cookie"
+import cookie from "cookie";
 
 @Injectable()
 export class RefreshTokenStrategy extends PassportStrategy(
@@ -21,7 +21,11 @@ export class RefreshTokenStrategy extends PassportStrategy(
     }
 
     private static jwtFromCookie(req: Request): string | null {
-        return cookie.parse(req.headers.cookie).refreshToken;
+        try {
+            return cookie.parse(req.headers.cookie).refreshToken;
+        } catch {
+            throw new UnauthorizedException();
+        }
     }
 
     public async validate(req: Request, payload: any) {

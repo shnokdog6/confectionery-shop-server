@@ -62,6 +62,7 @@ export class AuthController {
             maxAge: fifteenDaysInMilliseconds,
             httpOnly: true,
             sameSite: "none",
+            secure: true,
         });
     }
 }

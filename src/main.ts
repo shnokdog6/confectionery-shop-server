@@ -5,6 +5,7 @@ import { AppModule } from "./app/app.module";
     const app = await NestFactory.create(AppModule);
     app.enableCors({
         origin: true,
+        credentials: true
     });
     await app.listen(3000);
 })();
