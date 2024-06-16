@@ -7,7 +7,7 @@ import { MD5 } from "object-hash";
 
 @Injectable()
 export class JwtService {
-    constructor(private readonly redisService: RedisService) {}
+    constructor(private readonly redisService: RedisService) { }
 
     public async setCurrentPayload(payload: JwtPayloadDto) {
         await this.redisService.setCurrentPayloadHash(payload.id, MD5(payload));

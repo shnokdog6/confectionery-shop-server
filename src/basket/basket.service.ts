@@ -1,12 +1,13 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { UserService } from "@/user/user.service";
-import { addToBasketDto } from "@/basket/dto/addToBasketDto";
+import { AddToBasketDto } from "@/basket/dto/AddToBasketDto";
 import { InjectModel } from "@nestjs/sequelize";
 import { Basket } from "@/basket/basket.model";
 import { ProductService } from "@/product/product.service";
 import { Product } from "@/product/product.model";
 import { Sequelize } from "sequelize-typescript";
 import { ProductsInBasket } from "@/products-in-basket/products-in-basket.model";
+import { DeleteFromBasketDto } from "@/basket/dto/DeleteFromBasketDto";
 
 @Injectable()
 export class BasketService {
@@ -18,28 +19,11 @@ export class BasketService {
         private productService: ProductService,
     ) {}
 
-    public async add(dto: addToBasketDto) {
-        const user = await this.userService.get({ id: dto.userID });
-        if (!user) {
-            throw new BadRequestException("Пользоветель не найден");
-        }
+    public async add(dto: AddToBasketDto) {
+        await this.validateRequest(dto);
+        const basket = await this.getOrCreateBasket(dto.userID);
 
-        const isProductsExist = await this.productService.include(
-            dto.products.map((product) => product.id),
-        );
-        if (!isProductsExist) {
-            throw new BadRequestException(
-                "Указан продукт, которого не существует",
-            );
-        }
-
-        const basket = await this.basketModel
-            .findOrCreate({
-                where: {
-                    userID: dto.userID,
-                },
-            })
-            .then((result) => result[0]);
+        console.log(dto.userID, basket.id);
 
         for (const product of dto.products) {
             const instance = await this.productInBasketModel.findOne({
@@ -62,12 +46,37 @@ export class BasketService {
         }
     }
 
+    public async delete(dto: DeleteFromBasketDto) {
+        await this.validateRequest(dto);
+        const basket = await this.getOrCreateBasket(dto.userID);
+
+        for (const product of dto.products) {
+            const instance = await this.productInBasketModel.findOne({
+                where: {
+                    productID: product.id,
+                },
+            });
+
+            if (!instance) {
+                continue;
+            }
+
+            instance.count -= product.count;
+            if (instance.count < 1) {
+                await this.productInBasketModel.destroy({
+                    where: {
+                        basketID: basket.id,
+                        productID: product.id,
+                    },
+                });
+                continue;
+            }
+            await instance.save();
+        }
+    }
+
     public async get(userID: string) {
-        const basket = await this.basketModel.findOne({
-            where: {
-                userID,
-            },
-        });
+        const basket = await this.getOrCreateBasket(userID);
         return this.productInBasketModel.findAll({
             include: {
                 model: Product,
@@ -86,5 +95,33 @@ export class BasketService {
                 ],
             },
         });
+    }
+
+    private async getOrCreateBasket(userID: string) {
+        const [basket] = await this.basketModel.findOrCreate({
+            where: {
+                userID,
+            },
+            defaults: {
+                userID,
+            },
+        });
+        return basket;
+    }
+
+    private async validateRequest(dto: AddToBasketDto | DeleteFromBasketDto) {
+        const user = await this.userService.get({ id: dto.userID });
+        if (!user) {
+            throw new BadRequestException("Пользоветель не найден");
+        }
+
+        const isProductsExist = await this.productService.include(
+            dto.products.map((product) => product.id),
+        );
+        if (!isProductsExist) {
+            throw new BadRequestException(
+                "Указан продукт, которого не существует",
+            );
+        }
     }
 }
