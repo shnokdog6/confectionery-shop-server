@@ -6,7 +6,7 @@ import { Roles, RolesGuard } from "@/role/role.guard";
 import { RoleType } from "@/role/role.enum";
 import { GetUserDto } from "@/user/dto/GetUserDto";
 
-@Controller("user")
+@Controller({ path: "user", version: "1" })
 export class UserController {
     constructor(private userService: UserService) {}
 

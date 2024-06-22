@@ -7,7 +7,7 @@ import { JwtAccessGuard } from "@/auth/strategy/access.strategy";
 import { User } from "@/user/user.decorator";
 import { JwtPayloadDto } from "@/jwt/dto/JwtPayloadDto";
 
-@Controller("order")
+@Controller({ path: "order", version: "1" })
 export class OrderController {
     constructor(private orderService: OrderService) {}
 

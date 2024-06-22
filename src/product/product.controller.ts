@@ -19,7 +19,7 @@ import { RoleType } from "@/role/role.enum";
 import { JwtAccessGuard } from "@/auth/strategy/access.strategy";
 import { GetProductDto } from "@/product/dto/GetProductDto";
 
-@Controller("product")
+@Controller({ path: "product", version: "1" })
 export class ProductController {
     constructor(private productService: ProductService) {}
 

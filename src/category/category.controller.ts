@@ -1,11 +1,8 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post } from "@nestjs/common";
 import { CategoryService } from "@/category/category.service";
 import { createCategoryDto } from "@/category/dto/createCategoryDto";
-import { Roles, RolesGuard } from "@/role/role.guard";
-import { RoleType } from "@/role/role.enum";
-import { JwtAccessGuard } from "@/auth/strategy/access.strategy";
 
-@Controller("category")
+@Controller({ path: "category", version: "1" })
 export class CategoryController {
     constructor(private categoryService: CategoryService) {}
 

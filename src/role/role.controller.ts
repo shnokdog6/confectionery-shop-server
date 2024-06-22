@@ -14,7 +14,7 @@ import { JwtAccessGuard } from "@/auth/strategy/access.strategy";
 import { Roles, RolesGuard } from "@/role/role.guard";
 import { RoleType } from "@/role/role.enum";
 
-@Controller("role")
+@Controller({ path: "role", version: "1" })
 export class RoleController {
     constructor(private readonly roleService: RoleService) {}
 

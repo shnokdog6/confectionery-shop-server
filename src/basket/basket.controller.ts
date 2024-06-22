@@ -15,7 +15,7 @@ import { User } from "@/user/user.decorator";
 import { JwtPayloadDto } from "@/jwt/dto/JwtPayloadDto";
 import { DeleteFromBasketDto } from "@/basket/dto/DeleteFromBasketDto";
 
-@Controller("basket")
+@Controller({ path: "basket", version: "1" })
 export class BasketController {
     constructor(private basketService: BasketService) {}
 

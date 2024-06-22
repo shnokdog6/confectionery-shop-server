@@ -16,7 +16,7 @@ import { JwtRefreshGuard } from "@/auth/strategy/refresh.strategy";
 
 const fifteenDaysInMilliseconds = 15 * 24 * 60 * 60 * 1000;
 
-@Controller("auth")
+@Controller({ path: "auth", version: "1" })
 export class AuthController {
     constructor(private authService: AuthService) {}
 
