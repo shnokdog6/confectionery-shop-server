@@ -1,11 +1,4 @@
-import {
-    Body,
-    Controller,
-    Delete,
-    Get,
-    Patch,
-    UseGuards,
-} from "@nestjs/common";
+import { Body, Controller, Delete, Get, Post, UseGuards } from "@nestjs/common";
 import { JwtAccessGuard } from "@/auth/strategy/access.strategy";
 import { BasketService } from "@/basket/basket.service";
 import { AddToBasketDto } from "@/basket/dto/AddToBasketDto";
@@ -28,7 +21,7 @@ export class BasketController {
 
     @Roles([RoleType.USER])
     @UseGuards(JwtAccessGuard, RolesGuard)
-    @Patch()
+    @Post()
     public async add(@User() user: JwtPayloadDto, @Body() dto: AddToBasketDto) {
         return this.basketService.add({ ...dto, userID: user.id });
     }

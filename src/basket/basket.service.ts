@@ -23,56 +23,50 @@ export class BasketService {
         await this.validateRequest(dto);
         const basket = await this.getOrCreateBasket(dto.userID);
 
-        console.log(dto.userID, basket.id);
+        const instance = await this.productInBasketModel.findOne({
+            where: {
+                productID: dto.product.id,
+            },
+        });
 
-        for (const product of dto.products) {
-            const instance = await this.productInBasketModel.findOne({
-                where: {
-                    productID: product.id,
-                },
+        if (!instance) {
+            await this.productInBasketModel.create({
+                basketID: basket.id,
+                productID: dto.product.id,
+                count: dto.product.count,
             });
-
-            if (!instance) {
-                await this.productInBasketModel.create({
-                    basketID: basket.id,
-                    productID: product.id,
-                    count: product.count,
-                });
-                continue;
-            }
-
-            instance.count += product.count;
-            await instance.save();
+            return;
         }
+
+        instance.count += dto.product.count;
+        await instance.save();
     }
 
     public async delete(dto: DeleteFromBasketDto) {
         await this.validateRequest(dto);
         const basket = await this.getOrCreateBasket(dto.userID);
 
-        for (const product of dto.products) {
-            const instance = await this.productInBasketModel.findOne({
+        const instance = await this.productInBasketModel.findOne({
+            where: {
+                productID: dto.product.id,
+            },
+        });
+
+        if (!instance) {
+            return;
+        }
+
+        instance.count -= dto.product.count;
+        if (instance.count < 1) {
+            await this.productInBasketModel.destroy({
                 where: {
-                    productID: product.id,
+                    basketID: basket.id,
+                    productID: dto.product.id,
                 },
             });
-
-            if (!instance) {
-                continue;
-            }
-
-            instance.count -= product.count;
-            if (instance.count < 1) {
-                await this.productInBasketModel.destroy({
-                    where: {
-                        basketID: basket.id,
-                        productID: product.id,
-                    },
-                });
-                continue;
-            }
-            await instance.save();
+            return;
         }
+        await instance.save();
     }
 
     public async get(userID: string) {
@@ -115,10 +109,10 @@ export class BasketService {
             throw new BadRequestException("Пользоветель не найден");
         }
 
-        const isProductsExist = await this.productService.include(
-            dto.products.map((product) => product.id),
-        );
-        if (!isProductsExist) {
+        const isProductExist = await this.productService.include([
+            dto.product.id,
+        ]);
+        if (!isProductExist) {
             throw new BadRequestException(
                 "Указан продукт, которого не существует",
             );
