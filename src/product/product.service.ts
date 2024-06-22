@@ -7,11 +7,14 @@ import { InjectModel } from "@nestjs/sequelize";
 import sequelize from "sequelize";
 import { GetProductDto } from "@/product/dto/GetProductDto";
 import { ProductCategories } from "@/products-categories/product-categories.model";
+import { ProductDetailsModel } from "@/product-details/product-details.model";
 
 @Injectable()
 export class ProductService {
     constructor(
         @InjectModel(Product) private product: typeof Product,
+        @InjectModel(ProductDetailsModel)
+        private productDetails: typeof ProductDetailsModel,
         @InjectModel(ProductCategories)
         private productCategories: typeof ProductCategories,
         private fileService: FileService,
@@ -31,6 +34,25 @@ export class ProductService {
             where: {
                 ...dto,
             },
+        });
+    }
+
+    public async getByID(id: number) {
+        return await this.product.findByPk(id, {
+            include: [
+                {
+                    model: Category,
+                    through: {
+                        attributes: [],
+                    },
+                },
+                {
+                    model: ProductDetailsModel,
+                    attributes: {
+                        exclude: ["productID", "id"],
+                    },
+                },
+            ],
         });
     }
 
@@ -100,6 +122,12 @@ export class ProductService {
             name: dto.name,
             preview: filename,
             cost: dto.cost,
+        });
+
+        await this.productDetails.create({
+            productID: product.id,
+            description: dto.description,
+            compound: dto.compound,
         });
 
         for (const id of dto.categories) {

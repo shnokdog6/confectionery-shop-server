@@ -3,17 +3,14 @@ import {
     Controller,
     FileTypeValidator,
     Get,
+    Param,
     ParseFilePipe,
     Post,
     Query,
     UploadedFile,
-    UseGuards,
     UseInterceptors,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { Roles, RolesGuard } from "@/role/role.guard";
-import { RoleType } from "@/role/role.enum";
-import { JwtAccessGuard } from "@/auth/strategy/access.strategy";
 import { GetProductDto } from "@/product/dto/GetProductDto";
 import { CreateProductDto } from "@/product/dto/CreateProductDto";
 import { Product } from "@/product/product.model";
@@ -28,8 +25,13 @@ export class ProductController {
         return await this.productService.get(query);
     }
 
-    @Roles([RoleType.ADMIN])
-    @UseGuards(JwtAccessGuard, RolesGuard)
+    @Get(":id")
+    public async getByID(@Param("id") id: number) {
+        return await this.productService.getByID(id);
+    }
+
+    // @Roles([RoleType.ADMIN])
+    // @UseGuards(JwtAccessGuard, RolesGuard)
     @UseInterceptors(FileInterceptor("preview"))
     @Post()
     public async create(

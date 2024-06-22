@@ -3,4 +3,6 @@ export class CreateProductDto {
     public readonly preview: any;
     public readonly cost: number;
     public readonly categories: number[];
+    public readonly description: string;
+    public readonly compound: string;
 }

@@ -1,4 +1,10 @@
-import { BelongsToMany, Column, Model, Table } from "sequelize-typescript";
+import {
+    BelongsToMany,
+    Column,
+    HasOne,
+    Model,
+    Table,
+} from "sequelize-typescript";
 import { Category } from "@/category/category.model";
 import { Optional } from "sequelize";
 import { Basket } from "@/basket/basket.model";
@@ -6,6 +12,7 @@ import { ProductCategories } from "@/products-categories/product-categories.mode
 import { ProductsInOrder } from "@/products-in-order/products-in-order.model";
 import { Order } from "@/order/order.model";
 import { ProductsInBasket } from "@/products-in-basket/products-in-basket.model";
+import { ProductDetailsModel } from "@/product-details/product-details.model";
 
 export interface ProductAttributes {
     id: number;
@@ -37,4 +44,7 @@ export class Product extends Model<ProductAttributes, ProductCreateAttributes> {
 
     @BelongsToMany(() => Order, () => ProductsInOrder)
     orders: Order[];
+
+    @HasOne(() => ProductDetailsModel, { as: "details" })
+    productDetails: ProductDetailsModel;
 }
