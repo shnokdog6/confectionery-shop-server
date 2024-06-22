@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Post } from "@nestjs/common";
 import { CategoryService } from "@/category/category.service";
-import { createCategoryDto } from "@/category/dto/createCategoryDto";
+import { CreateCategoryDto } from "@/category/dto/CreateCategoryDto";
 
 @Controller({ path: "category", version: "1" })
 export class CategoryController {
@@ -19,7 +19,7 @@ export class CategoryController {
     // @Roles([RoleType.ADMIN])
     // @UseGuards(JwtAccessGuard, RolesGuard)
     @Post()
-    public async create(@Body() dto: createCategoryDto) {
+    public async create(@Body() dto: CreateCategoryDto) {
         return this.categoryService.create(dto);
     }
 }

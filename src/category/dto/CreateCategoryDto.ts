@@ -1,3 +1,3 @@
-export class createCategoryDto {
+export class CreateCategoryDto {
     public readonly name: string;
 }

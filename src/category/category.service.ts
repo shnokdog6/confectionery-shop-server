@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Category } from "@/category/category.model";
 import { InjectModel } from "@nestjs/sequelize";
-import { createCategoryDto } from "@/category/dto/createCategoryDto";
+import { CreateCategoryDto } from "@/category/dto/CreateCategoryDto";
 
 @Injectable()
 export class CategoryService {
@@ -15,7 +15,7 @@ export class CategoryService {
         return this.category.findByPk(id);
     }
 
-    public async create(dto: createCategoryDto) {
+    public async create(dto: CreateCategoryDto) {
         return this.category.create({ ...dto });
     }
 }
