@@ -8,9 +8,17 @@ import { AccessTokenStrategy } from "@/auth/strategy/access.strategy";
 import { RefreshTokenStrategy } from "@/auth/strategy/refresh.strategy";
 import { RoleModule } from "@/role/role.module";
 import { RedisModule } from "@/redis/redis.module";
+import { ConfigModule } from "@/config/config.module";
 
 @Module({
-    imports: [UserModule, RoleModule, PassportModule, JwtModule, RedisModule],
+    imports: [
+        ConfigModule,
+        UserModule,
+        RoleModule,
+        PassportModule,
+        JwtModule,
+        RedisModule,
+    ],
     providers: [AuthService, AccessTokenStrategy, RefreshTokenStrategy],
     controllers: [AuthController],
 })
