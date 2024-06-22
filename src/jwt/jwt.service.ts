@@ -5,6 +5,7 @@ import { AuthResponseDto } from "@/auth/dto/AuthResponseDto";
 import { RedisService } from "@/redis/redis.service";
 import { MD5 } from "object-hash";
 import { ConfigService } from "@nestjs/config";
+import { JwtTokensDto } from "@/jwt/dto/JwtTokensDto";
 
 @Injectable()
 export class JwtService {
@@ -17,7 +18,7 @@ export class JwtService {
         await this.redisService.setCurrentPayloadHash(payload.id, MD5(payload));
     }
 
-    public generateTokens(dto: JwtPayloadDto): AuthResponseDto {
+    public generateTokens(dto: JwtPayloadDto): JwtTokensDto {
         return {
             accessToken: jwt.sign(
                 dto,
@@ -29,6 +30,6 @@ export class JwtService {
                 this.configService.get("JWT_REFRESH_KEY"),
                 { expiresIn: "15d" },
             ),
-        } as AuthResponseDto;
+        } as JwtTokensDto;
     }
 }

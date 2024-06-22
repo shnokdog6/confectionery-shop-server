@@ -32,7 +32,10 @@ export class AuthService {
             throw new BadRequestException("Неверный пароль");
         }
 
-        return this.generateTokens(user);
+        return {
+            ...(await this.generateTokens(user)),
+            roles: user.roles.map((role) => role.id),
+        } as AuthResponseDto;
     }
 
     public async register(dto: AuthRequestDto): Promise<AuthResponseDto> {
@@ -53,7 +56,10 @@ export class AuthService {
             roles: [RoleType.USER],
         });
 
-        return this.generateTokens(candidate, [RoleType.USER]);
+        return {
+            ...(await this.generateTokens(candidate, [RoleType.USER])),
+            roles: [RoleType.USER],
+        } as AuthResponseDto;
     }
 
     public async refreshTokens(userID: string, refreshToken: string) {
