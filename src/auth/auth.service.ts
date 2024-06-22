@@ -62,7 +62,10 @@ export class AuthService {
         } as AuthResponseDto;
     }
 
-    public async refreshTokens(userID: string, refreshToken: string) {
+    public async refreshTokens(
+        userID: string,
+        refreshToken: string,
+    ): Promise<AuthResponseDto> {
         const user = await this.userService.getByID(userID);
 
         if (!user || !user.refreshToken) {
@@ -78,7 +81,10 @@ export class AuthService {
             throw new BadRequestException();
         }
 
-        return this.generateTokens(user);
+        return {
+            ...(await this.generateTokens(user, [RoleType.USER])),
+            roles: [RoleType.USER],
+        } as AuthResponseDto;
     }
 
     private async generateTokens(user: UserModel, roles?: RoleType[]) {
