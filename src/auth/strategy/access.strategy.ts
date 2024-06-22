@@ -5,17 +5,21 @@ import { JwtPayloadDto } from "@/jwt/dto/JwtPayloadDto";
 import { RedisService } from "@/redis/redis.service";
 import { Request } from "express";
 import { MD5 } from "object-hash";
+import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class AccessTokenStrategy extends PassportStrategy(
     Strategy,
     "jwt-access",
 ) {
-    constructor(private readonly redisService: RedisService) {
+    constructor(
+        private readonly redisService: RedisService,
+        configService: ConfigService<EnvironmentVariables>,
+    ) {
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
             ignoreExpiration: false,
-            secretOrKey: "access",
+            secretOrKey: configService.get("JWT_ACCESS_KEY"),
             passReqToCallback: true,
         });
     }
