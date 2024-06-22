@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
 import { Order } from "@/order/order.model";
-import { createOrderDto } from "@/order/dto/createOrderDto";
+import { CreateOrderDto } from "@/order/dto/CreateOrderDto";
 import { ProductService } from "@/product/product.service";
 import { Product } from "@/product/product.model";
 import { Sequelize } from "sequelize-typescript";
@@ -31,7 +31,7 @@ export class OrderService {
         });
     }
 
-    public async create(dto: createOrderDto) {
+    public async create(dto: CreateOrderDto) {
         const sum = await this.productService.getSumOfProducts(
             dto.products.map((item) => item.id),
         );

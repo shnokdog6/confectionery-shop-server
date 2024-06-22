@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post, UseGuards } from "@nestjs/common";
 import { OrderService } from "@/order/order.service";
-import { createOrderDto } from "@/order/dto/createOrderDto";
+import { CreateOrderDto } from "@/order/dto/CreateOrderDto";
 import { Roles, RolesGuard } from "@/role/role.guard";
 import { RoleType } from "@/role/role.enum";
 import { JwtAccessGuard } from "@/auth/strategy/access.strategy";
@@ -28,7 +28,7 @@ export class OrderController {
     @Roles([RoleType.USER])
     @UseGuards(JwtAccessGuard, RolesGuard)
     @Post()
-    public async create(@Body() dto: createOrderDto) {
+    public async create(@Body() dto: CreateOrderDto) {
         return this.orderService.create(dto);
     }
 }
