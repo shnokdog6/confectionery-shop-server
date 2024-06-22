@@ -1,6 +1,3 @@
-import { createProductDto } from "@/product/dto/createProductDto";
-import { Product } from "@/product/product.model";
-import { ProductService } from "@/product/product.service";
 import {
     Body,
     Controller,
@@ -18,6 +15,9 @@ import { Roles, RolesGuard } from "@/role/role.guard";
 import { RoleType } from "@/role/role.enum";
 import { JwtAccessGuard } from "@/auth/strategy/access.strategy";
 import { GetProductDto } from "@/product/dto/GetProductDto";
+import { CreateProductDto } from "@/product/dto/CreateProductDto";
+import { Product } from "@/product/product.model";
+import { ProductService } from "@/product/product.service";
 
 @Controller({ path: "product", version: "1" })
 export class ProductController {
@@ -33,7 +33,7 @@ export class ProductController {
     @UseInterceptors(FileInterceptor("preview"))
     @Post()
     public async create(
-        @Body() dto: createProductDto,
+        @Body() dto: CreateProductDto,
         @UploadedFile(
             new ParseFilePipe({
                 validators: [new FileTypeValidator({ fileType: "image/*" })],

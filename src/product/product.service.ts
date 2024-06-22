@@ -1,6 +1,6 @@
 import { Category } from "@/category/category.model";
 import { FileService } from "@/file/file.service";
-import { createProductDto } from "@/product/dto/createProductDto";
+import { CreateProductDto } from "@/product/dto/CreateProductDto";
 import { Product } from "@/product/product.model";
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
@@ -93,7 +93,7 @@ export class ProductService {
         return products.length === identifiers.length;
     }
 
-    public async create(dto: createProductDto) {
+    public async create(dto: CreateProductDto) {
         const filename =
             (await this.fileService.create(dto.preview)) || "empty";
         const product = await this.product.create({
