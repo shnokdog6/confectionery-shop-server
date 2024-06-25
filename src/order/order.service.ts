@@ -9,8 +9,8 @@ import { UserModel } from "@/user/user.model";
 import { JwtPayloadDto } from "@/jwt/dto/JwtPayloadDto";
 import { RoleType } from "@/role/role.enum";
 import { ProductsInOrder } from "@/products-in-order/products-in-order.model";
-import { OrderStatus } from "@/order-status/order-status.enum";
 import { OrderStatusModel } from "@/order-status/order-status.model";
+import { UpdateOrderDto } from "@/order/dto/UpdateOrderDto";
 
 @Injectable()
 export class OrderService {
@@ -78,5 +78,11 @@ export class OrderService {
                 ],
             },
         });
+    }
+
+    public async update({ orderID, ...dto }: UpdateOrderDto) {
+        const order = await this.orderModel.findByPk(orderID);
+        await order.update(dto);
+        await order.save();
     }
 }
