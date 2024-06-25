@@ -28,7 +28,10 @@ export class OrderController {
     @Roles([RoleType.USER])
     @UseGuards(JwtAccessGuard, RolesGuard)
     @Post()
-    public async create(@Body() dto: CreateOrderDto) {
-        return this.orderService.create(dto);
+    public async create(
+        @User() user: JwtPayloadDto,
+        @Body() dto: CreateOrderDto,
+    ) {
+        return this.orderService.create({ ...dto, userID: user.id });
     }
 }
