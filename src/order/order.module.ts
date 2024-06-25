@@ -5,10 +5,11 @@ import { SequelizeModule } from "@nestjs/sequelize";
 import { Order } from "@/order/order.model";
 import { ProductModule } from "@/product/product.module";
 import { ProductsInOrder } from "@/products-in-order/products-in-order.model";
+import { OrderStatusModel } from "@/order-status/order-status.model";
 
 @Module({
     imports: [
-        SequelizeModule.forFeature([Order, ProductsInOrder]),
+        SequelizeModule.forFeature([Order, OrderStatusModel, ProductsInOrder]),
         ProductModule,
     ],
     providers: [OrderService],
