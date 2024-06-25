@@ -39,7 +39,6 @@ export class OrderService {
         );
         const order = await this.orderModel.create({
             userID: dto.userID,
-            statusID: OrderStatus.IN_PROCESSING,
             sum,
         });
         for (const product of dto.products) {

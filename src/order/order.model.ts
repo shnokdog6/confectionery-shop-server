@@ -30,7 +30,7 @@ export class Order extends Model<OrderAttributes, OrderCreateAttributes> {
     userID: string;
 
     @ForeignKey(() => OrderStatusModel)
-    @Column({ allowNull: false })
+    @Column({ allowNull: false, defaultValue: OrderStatus.IN_PROCESSING })
     statusID: number;
 
     @BelongsTo(() => UserModel)
