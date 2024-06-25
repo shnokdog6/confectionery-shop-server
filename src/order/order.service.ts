@@ -9,6 +9,8 @@ import { UserModel } from "@/user/user.model";
 import { JwtPayloadDto } from "@/jwt/dto/JwtPayloadDto";
 import { RoleType } from "@/role/role.enum";
 import { ProductsInOrder } from "@/products-in-order/products-in-order.model";
+import { OrderStatus } from "@/order-status/order-status.enum";
+import { OrderStatusModel } from "@/order-status/order-status.model";
 
 @Injectable()
 export class OrderService {
@@ -37,6 +39,7 @@ export class OrderService {
         );
         const order = await this.orderModel.create({
             userID: dto.userID,
+            statusID: OrderStatus.IN_PROCESSING,
             sum,
         });
         for (const product of dto.products) {
@@ -58,9 +61,12 @@ export class OrderService {
                         attributes: [],
                     },
                 },
+                {
+                    model: OrderStatusModel,
+                },
             ],
             attributes: {
-                exclude: ["userID"],
+                exclude: ["userID", "statusID"],
                 include: [
                     [Sequelize.col('"products"."id"'), "products.id"],
                     [Sequelize.col('"products"."name"'), "products.name"],
