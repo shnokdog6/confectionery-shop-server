@@ -27,8 +27,16 @@ export class OrderService {
 
     public async get(dto: JwtPayloadDto) {
         return this.orderModel.findAll({
+            include: [
+                {
+                    model: OrderStatusModel,
+                },
+            ],
             where: {
                 ...(!dto.roles.includes(RoleType.ADMIN) && { userID: dto.id }),
+            },
+            attributes: {
+                exclude: ["userID", "statusID"],
             },
         });
     }
