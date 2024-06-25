@@ -1,4 +1,4 @@
-import { BelongsTo, Column, Model, Table } from "sequelize-typescript";
+import { BelongsTo, Column, HasMany, Model, Table } from "sequelize-typescript";
 import { Optional } from "sequelize";
 import { Order, OrderAttributes } from "@/order/order.model";
 
@@ -18,6 +18,6 @@ export class OrderStatusModel extends Model<
     @Column({ allowNull: false })
     name: string;
 
-    @BelongsTo(() => Order)
+    @HasMany(() => Order)
     orders: Order[];
 }
