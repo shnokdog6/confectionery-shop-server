@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Patch, Post, UseGuards } from "@nestjs/common";
+import {
+    Body,
+    Controller,
+    Get,
+    Param,
+    Patch,
+    Post,
+    UseGuards,
+} from "@nestjs/common";
 import { OrderService } from "@/order/order.service";
 import { CreateOrderDto } from "@/order/dto/CreateOrderDto";
 import { Roles, RolesGuard } from "@/role/role.guard";
@@ -24,6 +32,13 @@ export class OrderController {
     @Get()
     public async get(@User() user: JwtPayloadDto) {
         return this.orderService.get(user);
+    }
+
+    @Roles([RoleType.USER])
+    @UseGuards(JwtAccessGuard)
+    @Get(":id")
+    public async getByID(@Param("id") id: number) {
+        return this.orderService.getByID(id);
     }
 
     @Roles([RoleType.USER])
