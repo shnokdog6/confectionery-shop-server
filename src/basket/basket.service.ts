@@ -7,6 +7,7 @@ import { ProductService } from "@/product/product.service";
 import { Product } from "@/product/product.model";
 import { Sequelize } from "sequelize-typescript";
 import { ProductsInBasket } from "@/products-in-basket/products-in-basket.model";
+import { ReduceFromBasketDto } from "@/basket/dto/ReduceFromBasketDto";
 import { DeleteFromBasketDto } from "@/basket/dto/DeleteFromBasketDto";
 
 @Injectable()
@@ -42,12 +43,13 @@ export class BasketService {
         await instance.save();
     }
 
-    public async delete(dto: DeleteFromBasketDto) {
+    public async reduce(dto: ReduceFromBasketDto) {
         await this.validateRequest(dto);
         const basket = await this.getOrCreateBasket(dto.userID);
 
         const instance = await this.productInBasketModel.findOne({
             where: {
+                basketID: basket.id,
                 productID: dto.product.id,
             },
         });
@@ -58,15 +60,20 @@ export class BasketService {
 
         instance.count -= dto.product.count;
         if (instance.count < 1) {
-            await this.productInBasketModel.destroy({
-                where: {
-                    basketID: basket.id,
-                    productID: dto.product.id,
-                },
-            });
+            await this.delete(dto);
             return;
         }
         await instance.save();
+    }
+
+    public async delete(dto: DeleteFromBasketDto) {
+        const basket = await this.getOrCreateBasket(dto.userID);
+        await this.productInBasketModel.destroy({
+            where: {
+                basketID: basket.id,
+                productID: dto.product.id,
+            },
+        });
     }
 
     public async get(userID: string) {
@@ -103,7 +110,7 @@ export class BasketService {
         return basket;
     }
 
-    private async validateRequest(dto: AddToBasketDto | DeleteFromBasketDto) {
+    private async validateRequest(dto: AddToBasketDto | ReduceFromBasketDto) {
         const user = await this.userService.get({ id: dto.userID });
         if (!user) {
             throw new BadRequestException("Пользоветель не найден");

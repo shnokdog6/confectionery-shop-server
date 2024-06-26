@@ -6,6 +6,7 @@ import { Roles, RolesGuard } from "@/role/role.guard";
 import { RoleType } from "@/role/role.enum";
 import { User } from "@/user/user.decorator";
 import { JwtPayloadDto } from "@/jwt/dto/JwtPayloadDto";
+import { ReduceFromBasketDto } from "@/basket/dto/ReduceFromBasketDto";
 import { DeleteFromBasketDto } from "@/basket/dto/DeleteFromBasketDto";
 
 @Controller({ path: "basket", version: "1" })
@@ -24,6 +25,16 @@ export class BasketController {
     @Post()
     public async add(@User() user: JwtPayloadDto, @Body() dto: AddToBasketDto) {
         return this.basketService.add({ ...dto, userID: user.id });
+    }
+
+    @Roles([RoleType.USER])
+    @UseGuards(JwtAccessGuard, RolesGuard)
+    @Post()
+    public async reduce(
+        @User() user: JwtPayloadDto,
+        @Body() dto: ReduceFromBasketDto,
+    ) {
+        return this.basketService.reduce({ ...dto, userID: user.id });
     }
 
     @Roles([RoleType.USER])
