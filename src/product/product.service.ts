@@ -95,17 +95,6 @@ export class ProductService {
         });
     }
 
-    public async getById(id: number) {
-        return this.product.findByPk(id, {
-            include: {
-                model: Category,
-                through: {
-                    attributes: [],
-                },
-            },
-        });
-    }
-
     public async include(identifiers: number[]) {
         const products = await this.product.findAll({
             where: {
@@ -137,20 +126,15 @@ export class ProductService {
             });
         }
 
-        return this.getById(product.id);
+        return this.getByID(product.id);
     }
 
-    public async getSumOfProducts(identifiers: number[]) {
+    public async getProductCost(id: number) {
         return await this.product
-            .findAll({
-                where: {
-                    id: identifiers,
-                },
-                attributes: [
-                    [sequelize.fn("sum", sequelize.col("cost")), "cost"],
-                ],
+            .findByPk(id, {
+                attributes: ["cost"],
                 raw: true,
             })
-            .then((result) => result[0].cost);
+            .then((result) => result.cost);
     }
 }
