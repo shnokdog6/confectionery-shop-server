@@ -9,6 +9,8 @@ import { Sequelize } from "sequelize-typescript";
 import { ProductsInBasket } from "@/products-in-basket/products-in-basket.model";
 import { ReduceFromBasketDto } from "@/basket/dto/ReduceFromBasketDto";
 import { DeleteFromBasketDto } from "@/basket/dto/DeleteFromBasketDto";
+import { PatchProductDto } from "@/basket/dto/PatchProductDto";
+import { CreateInBasketDto } from "@/basket/dto/CreateInBasketDto";
 
 @Injectable()
 export class BasketService {
@@ -22,20 +24,10 @@ export class BasketService {
 
     public async add(dto: AddToBasketDto) {
         await this.validateRequest(dto);
-        const basket = await this.getOrCreateBasket(dto.userID);
 
-        const instance = await this.productInBasketModel.findOne({
-            where: {
-                productID: dto.product.id,
-            },
-        });
-
+        const instance = await this.getOne(dto.user.id, dto.product.id);
         if (!instance) {
-            await this.productInBasketModel.create({
-                basketID: basket.id,
-                productID: dto.product.id,
-                count: dto.product.count,
-            });
+            await this.create(dto);
             return;
         }
 
@@ -43,16 +35,25 @@ export class BasketService {
         await instance.save();
     }
 
+    public async patch(dto: PatchProductDto) {
+        await this.validateRequest(dto);
+
+        const instance = await this.getOne(dto.user.id, dto.product.id);
+        if (!instance) {
+            return;
+        }
+
+        instance.count = dto.product.count;
+        if (instance.count < 1) {
+            await this.delete(dto);
+            return;
+        }
+        await instance.save();
+    }
+
     public async reduce(dto: ReduceFromBasketDto) {
         await this.validateRequest(dto);
-        const basket = await this.getOrCreateBasket(dto.userID);
-
-        const instance = await this.productInBasketModel.findOne({
-            where: {
-                basketID: basket.id,
-                productID: dto.product.id,
-            },
-        });
+        const instance = await this.getOne(dto.user.id, dto.product.id);
 
         if (!instance) {
             return;
@@ -66,12 +67,30 @@ export class BasketService {
         await instance.save();
     }
 
+    public async create(dto: CreateInBasketDto) {
+        const basket = await this.getOrCreateBasket(dto.user.id);
+        return await this.productInBasketModel.create({
+            basketID: basket.id,
+            productID: dto.product.id,
+        });
+    }
+
     public async delete(dto: DeleteFromBasketDto) {
-        const basket = await this.getOrCreateBasket(dto.userID);
+        const basket = await this.getOrCreateBasket(dto.user.id);
         await this.productInBasketModel.destroy({
             where: {
                 basketID: basket.id,
                 productID: dto.product.id,
+            },
+        });
+    }
+
+    public async getOne(userID: string, productID: number) {
+        const basket = await this.getOrCreateBasket(userID);
+        return this.productInBasketModel.findOne({
+            where: {
+                basketID: basket.id,
+                productID,
             },
         });
     }
@@ -111,7 +130,7 @@ export class BasketService {
     }
 
     private async validateRequest(dto: AddToBasketDto | ReduceFromBasketDto) {
-        const user = await this.userService.get({ id: dto.userID });
+        const user = await this.userService.get({ id: dto.user.id });
         if (!user) {
             throw new BadRequestException("Пользоветель не найден");
         }

@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, Post, UseGuards } from "@nestjs/common";
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Patch,
+    Post,
+    UseGuards,
+} from "@nestjs/common";
 import { JwtAccessGuard } from "@/auth/strategy/access.strategy";
 import { BasketService } from "@/basket/basket.service";
 import { AddToBasketDto } from "@/basket/dto/AddToBasketDto";
@@ -8,6 +16,7 @@ import { User } from "@/user/user.decorator";
 import { JwtPayloadDto } from "@/jwt/dto/JwtPayloadDto";
 import { ReduceFromBasketDto } from "@/basket/dto/ReduceFromBasketDto";
 import { DeleteFromBasketDto } from "@/basket/dto/DeleteFromBasketDto";
+import { PatchProductDto } from "@/basket/dto/PatchProductDto";
 
 @Controller({ path: "basket", version: "1" })
 export class BasketController {
@@ -24,7 +33,7 @@ export class BasketController {
     @UseGuards(JwtAccessGuard, RolesGuard)
     @Post()
     public async add(@User() user: JwtPayloadDto, @Body() dto: AddToBasketDto) {
-        return this.basketService.add({ ...dto, userID: user.id });
+        return this.basketService.add({ ...dto, user });
     }
 
     @Roles([RoleType.USER])
@@ -34,7 +43,17 @@ export class BasketController {
         @User() user: JwtPayloadDto,
         @Body() dto: ReduceFromBasketDto,
     ) {
-        return this.basketService.reduce({ ...dto, userID: user.id });
+        return this.basketService.reduce({ ...dto, user });
+    }
+
+    @Roles([RoleType.USER])
+    @UseGuards(JwtAccessGuard, RolesGuard)
+    @Patch()
+    public async patch(
+        @User() user: JwtPayloadDto,
+        @Body() dto: PatchProductDto,
+    ) {
+        return this.basketService.patch({ ...dto, user });
     }
 
     @Roles([RoleType.USER])
@@ -44,6 +63,6 @@ export class BasketController {
         @User() user: JwtPayloadDto,
         @Body() dto: DeleteFromBasketDto,
     ) {
-        return this.basketService.delete({ ...dto, userID: user.id });
+        return this.basketService.delete({ ...dto, user });
     }
 }

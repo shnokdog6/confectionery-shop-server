@@ -1,7 +1,8 @@
 import { ProductAttributes } from "@/product/product.model";
+import { UserAttributes } from "@/user/user.model";
 
 export class ReduceFromBasketDto {
-    public readonly userID: string;
+    public readonly user: Pick<UserAttributes, "id">;
     public readonly product: Pick<ProductAttributes, "id"> & {
         count: number;
     };

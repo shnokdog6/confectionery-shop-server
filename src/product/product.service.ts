@@ -1,10 +1,10 @@
+import sequelize from "sequelize";
 import { Category } from "@/category/category.model";
 import { FileService } from "@/file/file.service";
 import { CreateProductDto } from "@/product/dto/CreateProductDto";
 import { Product } from "@/product/product.model";
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
-import sequelize from "sequelize";
 import { GetProductDto } from "@/product/dto/GetProductDto";
 import { ProductCategories } from "@/products-categories/product-categories.model";
 import { ProductDetailsModel } from "@/product-details/product-details.model";

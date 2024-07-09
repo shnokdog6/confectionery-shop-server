@@ -1,4 +1,7 @@
+import { ProductAttributes } from "@/product/product.model";
+import { UserAttributes } from "@/user/user.model";
+
 export class AddToBasketDto {
-    public readonly userID: string;
-    public readonly product: { id: number; count: number };
+    public readonly user: Pick<UserAttributes, "id">;
+    public readonly product: Pick<ProductAttributes, "id"> & { count: number };
 }
